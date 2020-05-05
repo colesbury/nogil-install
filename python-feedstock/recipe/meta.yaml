@@ -1,4 +1,4 @@
-{% set version = "3.9.0" %}
+{% set version = "3.10.0" %}
 {% set linkage_nature = os.environ.get('PY_INTERP_LINKAGE_NATURE', '') %}
 {% set debug = os.environ.get('PY_INTERP_DEBUG', '') %}
 {% if linkage_nature != '' %}
@@ -13,7 +13,8 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://www.python.org/ftp/python/3.9.0/Python-3.9.0a3.tar.xz
+  - git_url: https://github.com/colesbury/nogil.git
+    git_rev: conda
     patches:
 # {% if 'conda-forge' not in channel_targets %}
 #       - patches/0001-Add-Anaconda-Distribution-version-logic.patch
@@ -40,7 +41,7 @@ source:
       - patches/0020-Use-ranlib-from-env-if-env-variable-is-set.patch
       - patches/0021-roll-back-2e33ecd-for-py_compile.main.patch
       # Python 3.8 is pretty broken without this.
-      - patches/0022-Add-CondaEcosystemModifyDllSearchPath.patch
+      # - patches/0022-Add-CondaEcosystemModifyDllSearchPath.patch
 
   # TODO :: Depend on our own packages for these:
   - url: https://github.com/python/cpython-source-deps/archive/xz-5.2.2.zip          # [win]
@@ -75,7 +76,7 @@ source:
 
 
 build:
-  number: 9
+  number: 1
   # Windows has issues updating python if conda is using files itself.
   # Copy rather than link.
   no_link:
@@ -102,7 +103,7 @@ build:
     noarch:
       - python
     # weak:
-    #   - python_abi 3.9.* *_cp39
+    #   - python_abi 3.10.* *_cp310
   script_env:
    - PY_INTERP_LINKAGE_NATURE
    - PY_INTERP_DEBUG
@@ -143,7 +144,7 @@ requirements:
   run:
     - ld_impl_{{ target_platform }}  # [linux]
   # run_constrained:
-  #   - python_abi 3.9.* *_cp39
+  #   - python_abi 3.10.* *_cp310
 
 test:
   requires:
