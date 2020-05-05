@@ -1,0 +1,25 @@
+From d9ee4b175532ac241e2c2b193b14e0a51e3e0ea1 Mon Sep 17 00:00:00 2001
+From: Sam Gross <colesbury@gmail.com>
+Date: Tue, 5 May 2020 17:01:52 -0400
+Subject: [PATCH] nogil: use Py_REFCNT instead of ob_refcnt
+
+---
+ numpy/core/include/numpy/ndarrayobject.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/numpy/core/include/numpy/ndarrayobject.h b/numpy/core/include/numpy/ndarrayobject.h
+index 95e9cb060..58c8d1477 100644
+--- a/numpy/core/include/numpy/ndarrayobject.h
++++ b/numpy/core/include/numpy/ndarrayobject.h
+@@ -111,7 +111,7 @@ extern "C" {
+ #define PyArray_FILLWBYTE(obj, val) memset(PyArray_DATA(obj), val, \
+                                            PyArray_NBYTES(obj))
+ #ifndef PYPY_VERSION
+-#define PyArray_REFCOUNT(obj) (((PyObject *)(obj))->ob_refcnt)
++#define PyArray_REFCOUNT(obj) Py_REFCNT(obj)
+ #define NPY_REFCOUNT PyArray_REFCOUNT
+ #endif
+ #define NPY_MAX_ELSIZE (2 * NPY_SIZEOF_LONGDOUBLE)
+-- 
+2.24.1
+

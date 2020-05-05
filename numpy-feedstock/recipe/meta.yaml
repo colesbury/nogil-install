@@ -15,6 +15,7 @@ source:
       - 0003-intel_init_mkl.patch
       {%- endif %}
       - 0007-Obtain-and-prefer-custom-gfortran-from-env-variable.patch
+      - 0020-nogil-use-Py_REFCNT-instead-of-ob_refcnt.patch
 
 build:
   number: 1
