@@ -38,6 +38,7 @@ if [[ ${DEBUG_C} == yes ]]; then
 else
   _OPTIMIZED=yes
 fi
+_OPTIMIZED=no
 
 # Since these take very long to build in our emulated ci, disable for now
 if [[ ${target_platform} == linux-aarch64 ]]; then
