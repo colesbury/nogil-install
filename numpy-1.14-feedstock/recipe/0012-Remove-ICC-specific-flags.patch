@@ -1,0 +1,45 @@
+From d024bb22a4eff080571f63414b3046cb51c02316 Mon Sep 17 00:00:00 2001
+From: Michael Sarahan <msarahan@gmail.com>
+Date: Mon, 11 Jun 2018 17:03:58 -0500
+Subject: [PATCH 12/14] Remove ICC specific flags
+
+---
+ numpy/core/setup.py | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/numpy/core/setup.py b/numpy/core/setup.py
+index 6368e53bd..a8765b292 100644
+--- a/numpy/core/setup.py
++++ b/numpy/core/setup.py
+@@ -879,7 +879,7 @@ def configuration(parent_package='',top_path=None):
+                                   generate_numpy_api,
+                                   join(codegen_dir, 'generate_numpy_api.py'),
+                                   join('*.py')],
+-                         extra_compile_args=['/Qstd=c99' if platform.system() == "Windows" else ''],
++                         extra_compile_args=[],
+                          depends=deps + multiarray_deps,
+                          libraries=['npymath', 'npysort', 'aligned_alloc', 'mkl_cp'],
+                          extra_info=get_info('mkl'))
+@@ -934,12 +934,13 @@ def configuration(parent_package='',top_path=None):
+             join('src', 'private', 'binop_override.h')] + npymath_sources
+ 
+     npymathc_path = join('build', 'src.%s-%s.%s' % (sysconfig.get_platform(), sys.version_info[0], sys.version_info[1]), 'numpy', 'core', 'src', 'npymath')
+-    if platform.system() == "Windows":
+-        eca = ['/fp:fast=2', '/Qimf-precision=high', '/Qprec-sqrt', '/Qprotect-parens', '/Qstd=c99']
+-        if sys.version_info < (3, 0):
+-            eca.append('/Qprec-div')
+-    else:
+-        eca = ['-fp-model fast=2', '-fimf-precision=high', '-prec-sqrt', '-fprotect-parens']
++#    if platform.system() == "Windows":
++#        eca = ['/fp:fast=2', '/Qimf-precision=high', '/Qprec-sqrt', '/Qprotect-parens', '/Qstd=c99']
++#        if sys.version_info < (3, 0):
++#            eca.append('/Qprec-div')
++#    else:
++#        eca = ['-fp-model fast=2', '-fimf-precision=high', '-prec-sqrt', '-fprotect-parens']
++    eca=[]
+     config.add_library('loops',
+                        sources=loops_src,
+                        include_dirs=[npymathc_path],
+-- 
+2.11.1
+

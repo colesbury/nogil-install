@@ -1,0 +1,131 @@
+{% set name = "numpy" %}
+{% set version = "1.14.6" %}
+# {% set sha256 = "a4a433b3a264dbc9aa9c7c241e87c0358a503ea6394f8737df1683c7c9a102ac" %}
+
+package:
+  name: numpy_and_dev
+  version: {{ version }}
+
+source:
+  # Releases contain stale files (mtrand.c for example), see:
+  # https://github.com/numpy/numpy/issues/9391
+  # url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.zip
+  # sha256: {{ sha256 }}
+  # .. so build from the git source instead:
+  git_url: https://github.com/numpy/numpy
+  git_tag: v{{ version }}
+  patches:
+    - 0001-fix-windows-case-sensitivity.patch
+    - 0002-simplify-arch-flags.patch
+    - 0003-Obtain-and-prefer-custom-gfortran-from-env-variable.patch
+    - 0004-disable-memmap-filename-test-due-to-CI-link-confusio.patch
+    - 0005-disable-broken-tests.patch
+    {% if blas_impl == "mkl" and (not win or vc|int >= 14) -%}
+    # patches for MKL based enhancements
+    - 0006-use-mklfft-when-available.patch
+    - 0007-define-mkl_version-in-__init__.py.patch
+    - 0008-intel-umath-optimizations.patch
+    - 0009-intel-mkl_mem-all.patch
+    - 0010-intel-init_mkl.patch
+    - 0011-intel-mkl_random.patch
+    # patch up MKL patches
+    - 0012-Remove-ICC-specific-flags.patch
+    - 0013-Remove-np.invsqrt.patch
+    - 0014-Rewrite-inlining.patch
+    {%- endif %}
+
+build:
+  number: 4
+  skip: True  # [blas_impl == 'openblas' and win]
+  force_use_keys:
+    - python
+
+outputs:
+  # this one has all the actual contents
+  - name: numpy-base
+    script: install_base.sh   # [unix]
+    script: install_base.bat  # [win]
+    requirements:
+      build:
+        - {{ compiler("c") }}
+        - {{ compiler("fortran") }}
+        # HACK: need this for libquadmath.  Should fix the gcc package
+        - libgcc-ng                  # [linux]
+      host:
+        - cython
+        - python
+        - setuptools
+        - mkl-devel  {{ mkl }}  # [blas_impl == "mkl"]
+        - openblas-devel {{ openblas }}  # [blas_impl == "openblas"]
+      run:
+        - python
+    test:
+      commands:
+        - test -e $SP_DIR/numpy/distutils/site.cfg     # [unix]
+        - IF NOT EXIST %SP_DIR%\numpy\distutils\site.cfg exit 1  # [win]
+
+  # devel exists mostly to add the run_exports info.
+  - name: numpy-devel
+    build:
+      run_exports:
+        - {{ pin_subpackage('numpy') }}
+    requirements:
+      host:
+        - python
+        # these import blas metapackages to ensure consistency with downstream libs that also use blas
+        - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
+        - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
+      run:
+        - python
+        - {{ pin_subpackage('numpy-base', exact=True) }}
+
+  # metapackage for things that don't use numpy's C interface, or things
+  - name: numpy
+    requirements:
+      build:
+        # for runtime alignment
+        - {{ compiler('c') }}
+        - {{ compiler('fortran') }}
+      host:
+        - python
+      run:
+        - python
+        - {{ pin_subpackage('numpy-base', exact=True) }}
+        # openblas or mkl runtime included with run_exports
+        - mkl_fft # [blas_impl == 'mkl']
+        - mkl_random # [blas_impl == 'mkl' and (not win or vc>=14)]
+
+    test:
+      script: numpy_test.py
+      requires:
+        - nose
+        - {{ compiler('c') }}
+        - {{ compiler('fortran') }}
+        - nomkl  # [x86 and blas_impl != 'mkl']
+      commands:
+        - f2py -h
+        - python -c "import numpy; numpy.show_config()"
+        - conda inspect linkages -p $PREFIX numpy  # [not win]
+        - conda inspect objects -p $PREFIX numpy  # [osx]
+      imports:
+        - numpy
+        - numpy.linalg.lapack_lite
+
+    about:
+      home: http://numpy.scipy.org/
+      license: BSD 3-Clause
+      license_file: LICENSE.txt
+      summary: 'Array processing for numbers, strings, records, and objects.'
+      description: |
+        NumPy is the fundamental package needed for scientific computing with Python.
+      doc_url: https://docs.scipy.org/doc/numpy-1.14.0/reference/
+      dev_url: https://github.com/numpy/numpy
+      dev_source_url: https://github.com/numpy/numpy/tree/master/doc
+
+extra:
+  recipe-maintainers:
+    - jakirkham
+    - msarahan
+    - pelson
+    - rgommers
+    - ocefpaf

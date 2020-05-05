@@ -1,0 +1,25 @@
+From 3058f5c7dba3647fb9ac62971f0225df2f833ae0 Mon Sep 17 00:00:00 2001
+From: Michael Sarahan <msarahan@gmail.com>
+Date: Mon, 11 Jun 2018 16:35:41 -0500
+Subject: [PATCH 07/14] define mkl_version in __init__.py
+
+---
+ numpy/__init__.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/numpy/__init__.py b/numpy/__init__.py
+index 25e72ee16..cc0a8aebf 100644
+--- a/numpy/__init__.py
++++ b/numpy/__init__.py
+@@ -198,6 +198,8 @@ else:
+     oldnumeric = 'removed'
+     numarray = 'removed'
+ 
++    __mkl_version__ = "__MKL_VERSION__"
++
+     def _sanity_check():
+         """
+         Quick sanity checks for common bugs caused by environment.
+-- 
+2.11.1
+
