@@ -1,0 +1,51 @@
+package:
+  name: numpy
+  version: {{ numpy_version }}
+
+build:
+  skip: True  # [py2k]
+
+requirements:
+  build:
+    # for runtime alignment
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+  host:
+    - python
+    # these import blas metapackages to ensure consistency with downstream libs that also use blas
+    - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
+    - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
+  run:
+    - python
+    - numpy-base  {{ numpy_version }}
+    # openblas or mkl runtime included with run_exports
+    - mkl_fft  # [blas_impl == 'mkl']
+    - mkl_random # [blas_impl == 'mkl' and (not win or vc>=14)]
+
+test:
+  script: numpy_test.py
+  requires:
+    - pytest
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+    - nomkl  # [x86 and blas_impl != 'mkl']
+  commands:
+    - f2py -h
+    - python -c "import numpy; numpy.show_config()"
+    - pytest -v --pyargs numpy -k "not (test_loss_of_precision or test_einsum_sums_cfloat64)"  # [ppc64le]
+    - pytest -v --pyargs numpy -k "not (test_loss_of_precision or test_may_share_memory_easy_fuzz or test_xerbla_override or test_may_share_memory_harder_fuzz or test_large_zip or test_sdot_bug_8577 or test_unary_ufunc_call_fuzz)"  # [aarch64]
+    - pytest -v --pyargs numpy  # [not (aarch64 or ppc64le)]
+  imports:
+    - numpy
+    - numpy.linalg.lapack_lite
+
+about:
+  home: http://numpy.scipy.org/
+  license: BSD 3-Clause
+  # license_file is provided by numpy_base and is not included here
+  summary: 'Array processing for numbers, strings, records, and objects.'
+  description: |
+    NumPy is the fundamental package needed for scientific computing with Python.
+  doc_url: https://docs.scipy.org/doc/numpy-{{ numpy_version }}/reference/
+  dev_url: https://github.com/numpy/numpy
+  dev_source_url: https://github.com/numpy/numpy/tree/master/doc
