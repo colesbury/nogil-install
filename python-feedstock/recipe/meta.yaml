@@ -1,4 +1,4 @@
-{% set version = "3.10.0" %}
+{% set version = "3.9.0" %}
 {% set linkage_nature = os.environ.get('PY_INTERP_LINKAGE_NATURE', '') %}
 {% set debug = os.environ.get('PY_INTERP_DEBUG', '') %}
 {% if linkage_nature != '' %}
@@ -103,7 +103,7 @@ build:
     noarch:
       - python
     # weak:
-    #   - python_abi 3.10.* *_cp310
+    #   - python_abi 3.9.* *_cp39
   script_env:
    - PY_INTERP_LINKAGE_NATURE
    - PY_INTERP_DEBUG
@@ -144,7 +144,7 @@ requirements:
   run:
     - ld_impl_{{ target_platform }}  # [linux]
   # run_constrained:
-  #   - python_abi 3.10.* *_cp310
+  #   - python_abi 3.9.* *_cp38
 
 test:
   requires:
