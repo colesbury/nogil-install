@@ -33,6 +33,7 @@ source:
     - 0013-Remove-np.invsqrt.patch
     - 0014-Rewrite-inlining.patch
     {%- endif %}
+    - 0020-nogil-use-Py_REFCNT-instead-of-ob_refcnt.patch
 
 build:
   number: 4
