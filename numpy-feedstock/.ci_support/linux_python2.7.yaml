@@ -1,0 +1,18 @@
+blas_impl:
+- openblas
+c_compiler:
+- gcc
+fortran_compiler:
+- gfortran
+mkl:
+- '2018'
+numpy:
+- '1.9'
+openblas:
+- 0.2.20
+pin_run_as_build:
+  python:
+    min_pin: x.x
+    max_pin: x.x
+python:
+- '2.7'
