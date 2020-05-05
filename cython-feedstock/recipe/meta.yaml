@@ -7,6 +7,8 @@ package:
 source:
   url: https://pypi.io/packages/source/C/Cython/Cython-{{ version }}.tar.gz
   sha256: 6361588cb1d82875bcfbad83d7dd66c442099759f895cf547995f00601f9caf2
+  patches:
+    - 0001-nogil-use-Py_RESURRECT-Py_UNRESURRECT-instead-of-man.patch
 
 build:
   number: 0
