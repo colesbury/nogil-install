@@ -209,8 +209,10 @@ xz:
   - 5
 qtwebkit:
   - true
+channel_sources:
+  - colesbury,defaults
 channel_targets:
-  - defaults
+  - colesbury defaults
 zip_keys:
   -                             # [win]
     - vc                        # [win]
