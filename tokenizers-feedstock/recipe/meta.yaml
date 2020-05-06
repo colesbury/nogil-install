@@ -1,0 +1,37 @@
+{% set version = "0.7.0" %}
+
+package:
+  name: tokenizers
+  version: {{ version }}
+
+source:
+  url: https://github.com/huggingface/tokenizers/archive/python-v{{ version }}.tar.gz
+  sha256: dc92c3f46fe03058c495663b1c125ce87722cad69167276465f9d2ce0284edf4
+
+build:
+  number: 0
+  script: "cd bindings/python && {{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - rust-nightly >=1.43.0  # from powerai
+  host:
+    - python
+    - pip
+    - setuptools-rust  # NOTE: this requires conda-forge channel for noarch semantic_version
+  run:
+    - python
+
+about:
+  home: https://github.com/huggingface/tokenizers
+  summary: Fast State-of-the-Art Tokenizers optimized for Research and Production
+  license: Apache License 2.0
+  license_family: Apache
+  description: |
+    Provides an implementation of today's most used tokenizers, with a focus on
+    performance and versatility.
+
+extra:
+  recipe-maintainers:
+    - colesbury
