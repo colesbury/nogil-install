@@ -6,8 +6,8 @@ package:
 
 source:
   # We use the pypi URL as it includes the prepared Cython files.
-  url: https://pypi.io/packages/source/p/pyzmq/pyzmq-{{ version }}.tar.gz
-  sha256: 8c69a6cbfa94da29a34f6b16193e7c15f5d3220cb772d6d17425ff3faa063a6d
+  git_url: https://github.com/zeromq/pyzmq.git
+  git_rev: v18.1.1
 
 build:
   number: 0
@@ -23,6 +23,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
+    - cython
     - python
     - pip
     - zeromq
