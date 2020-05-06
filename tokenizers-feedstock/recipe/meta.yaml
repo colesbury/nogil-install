@@ -5,12 +5,18 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/huggingface/tokenizers/archive/python-v{{ version }}.tar.gz
-  sha256: dc92c3f46fe03058c495663b1c125ce87722cad69167276465f9d2ce0284edf4
+  - url: https://github.com/huggingface/tokenizers/archive/python-v{{ version }}.tar.gz
+    sha256: dc92c3f46fe03058c495663b1c125ce87722cad69167276465f9d2ce0284edf4
+    folder: tokenizers
+    patches:
+      - 0001-Use-local-pyo3-package.patch
+  - git_url: https://github.com/colesbury/pyo3
+    git_rev: master
+    folder: pyo3
 
 build:
-  number: 0
-  script: "cd bindings/python && {{ PYTHON }} -m pip install . -vv"
+  number: 1
+  script: "cd tokenizers/bindings/python && {{ PYTHON }} -m pip install . -vv"
 
 requirements:
   build:
