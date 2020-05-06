@@ -25,7 +25,7 @@ package:
 source:
   fn: tbb{{ vtag }}_oss_src.tgz
   url: https://github.com/intel/tbb/archive/{{ vtag }}.tar.gz
-  sha256: db80f4f7abb95c2d08fe64abdc0a9250903e4c725f1c667ac517450de426023a
+  #sha256: db80f4f7abb95c2d08fe64abdc0a9250903e4c725f1c667ac517450de426023a
 
 build:
   number: 0
