@@ -1,0 +1,115 @@
+{% set name = "scikit-learn" %}
+{% set version = "0.22.1" %}
+
+package:
+  name: scikit-learn
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://github.com/scikit-learn/scikit-learn/archive/{{ version }}.tar.gz
+  sha256: 7132d376a5cb605847022724e9a5dd294bd7c8a988e686b954fdeb00e24fe302
+  # patches:
+  #   - atol_in_gaussian_tests.patch  # [win]
+  #   - 0001-disable-test_predict_proba_binary.patch  # [win and vc==9]
+  #   # fails for mkl/py37/win32 - can apply selector if you want, but this should not be harmful.
+  #   - 0001-reduce-precision-of-almost_equal-in-test_graph_lasso.patch
+  #   # https://github.com/scikit-learn/scikit-learn/issues/12676
+  #   - 0002-xfail-test_omp_cv-due-to-mkl-issues.patch
+
+build:
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .  --verbose
+  skip: True  # [blas_impl == 'openblas' and win]
+  skip: True  # [py<35]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+  host:
+    - python
+    - pip
+    - cython
+    - llvm-openmp  # [osx]
+    - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
+    - numpy-devel  {{ numpy }}
+    - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
+    - scipy >=0.17
+  run:
+    - python
+    - llvm-openmp  # [osx]
+    - scipy
+    - joblib >=0.11
+
+
+# Some tests take alot of memory, and seem to cause segfaults when memory runs out
+{% set test_cpus = 1 %}
+
+{% set tests_to_skip = "_not_a_real_test" %}
+{% set tests_to_skip = tests_to_skip + " or test_ard_accuracy_on_easy_problem" %}
+# Fixed in 0.22.1 -- https://github.com/scikit-learn/scikit-learn/issues/15774
+{% set tests_to_skip = tests_to_skip + " or test_pca_dtype_preservation" %}               # [ppc64le]
+# Can fail on aarch64 -- https://github.com/scikit-learn/scikit-learn/issues/15821
+{% set tests_to_skip = tests_to_skip + " or test_uniform_grid" %}                         # [aarch64]
+# Can fail -- https://github.com/scikit-learn/scikit-learn/issues/15818
+{% set tests_to_skip = tests_to_skip + " or test_sag_regressor_computed_correct" %}       # [linux]
+# Occasionally fails on aarch64 -- https://github.com/scikit-learn/scikit-learn/issues/15825
+{% set tests_to_skip = tests_to_skip + " or test_unreachable_accuracy" %}                 # [aarch64]
+
+# TODO :: Fix this properly.
+# Running into the same suspected i686 MKL bug that afflicts numpy and scipy
+# (it is a shame to disable all tests for a few bad eggs, and, atol=0, really?):
+# test_common.py.test_non_meta_estimators:check_supervised_y_2d(GaussianProcessRegressor)
+# site-packages/numpy/testing/utils.py", line 778, in assert_array_compare
+#     raise AssertionError(msg)
+# AssertionError:
+# Not equal to tolerance rtol=1e-07, atol=0
+#
+# (mismatch 30.0%)
+#  x: array([ -4.066801e-08,   1.000000e+00,   2.000000e+00,   4.349049e-08,
+#          1.000000e+00,   2.000000e+00,   1.880388e-08,   1.000000e+00,
+#          2.000000e+00,   3.421711e-09])
+#  y: array([ -4.066806e-08,   1.000000e+00,   2.000000e+00,   4.349050e-08,
+#          1.000000e+00,   2.000000e+00,   1.880386e-08,   1.000000e+00,
+#          2.000000e+00,   3.421711e-09])
+#
+# ----------------------------------------------------------------------
+# Ran 7994 tests in 367.589s
+#
+# FAILED (SKIP=77, failures=2)
+
+test:
+  requires:
+    - pytest >=3.3.0
+    - cython >=0.28.5
+    - pytest-xdist
+    - pytest-timeout
+  imports:
+    - sklearn
+  commands:
+    - set OPENBLAS_NUM_THREADS=1          # [win]
+    - set OMP_NUM_THREADS=1               # [win]
+    - export OPENBLAS_NUM_THREADS=1       # [not win]
+    - export OMP_NUM_THREADS=1            # [not win]
+    - pytest --timeout 300 -n {{ test_cpus }} --verbose --pyargs sklearn -k "not ({{ tests_to_skip }})" # [not linux32 and not ppc64le]
+
+about:
+  home: http://scikit-learn.org/
+  license: BSD 3-Clause
+  license_file: COPYING
+  summary: A set of python modules for machine learning and data mining
+
+extra:
+  recipe-maintainers:
+    - amueller
+    - astaric
+    - jakirkham
+    - ogrisel
+    - ocefpaf
+    - lesteve
+    - msarahan
+    - jnothman
+    - rth
+    - adrinjalali
