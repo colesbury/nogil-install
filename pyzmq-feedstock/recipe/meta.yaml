@@ -1,0 +1,77 @@
+{% set version = "18.1.1" %}
+
+package:
+  name: pyzmq
+  version: {{ version }}
+
+source:
+  # We use the pypi URL as it includes the prepared Cython files.
+  url: https://pypi.io/packages/source/p/pyzmq/pyzmq-{{ version }}.tar.gz
+  sha256: 8c69a6cbfa94da29a34f6b16193e7c15f5d3220cb772d6d17425ff3faa063a6d
+
+build:
+  number: 0
+
+# On Windows ZeroMQ is bundled with pyzmq.
+# On Windows pyzmq includes tweetnacl so libsodium is not used.
+# We should revisit these in the future. However, packaging libsodium
+# on Windows is complicated by the fact that they ship project files,
+# but don't include one for VS 2008, which we would need for Python 2.7.
+requirements:
+  build:
+    - pkg-config  # [not win]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - zeromq
+  run:
+    - python
+
+test:
+  imports:
+    - zmq
+    - zmq.backend.cython.socket
+    - zmq.backend.cython.utils
+    - zmq.devices.monitoredqueue
+
+  requires:
+    - pytest
+
+  # We run the zmq tests on all platforms except Windows.
+  # The only reason not to run the tests on Windows is that
+  # they terminate with an interactive prompt. See also
+  # https://github.com/conda-forge/staged-recipes/pull/292#issuecomment-208080893
+  #
+  # Further: You need a lot of swap space (>=4GB probably) to run test_large_send
+  # TODO :: Add code to test_large_send to disable it when there is not enough
+  #         swap-space (maybe just extend the try: to cover the whole thing?)
+  #         or else add a --have-large-mem arg:
+  #         https://docs.pytest.org/en/latest/example/simple.html#control-skipping-of-tests-according-to-command-line-option
+  #
+  commands:
+    - py.test --pyargs zmq.tests.test_socket
+
+about:
+  home: https://github.com/zeromq/pyzmq
+  summary: Python bindings for zeromq
+  license: BSD 3-clause
+  license_family: BSD
+  description: |
+    PyZMQ contains Python bindings for 0MQ. 0MQ is a lightweight and fast
+    messaging implementation.
+  doc_url: https://pyzmq.readthedocs.org/
+  doc_source_url: https://github.com/zeromq/pyzmq/blob/master/docs/source/index.rst
+  dev_url: https://github.com/zeromq/pyzmq
+
+extra:
+  recipe-maintainers:
+    - jakirkham
+    - JohanMabille
+    - mingwandroid
+    - minrk
+    - msarahan
+    - ocefpaf
+    - pelson
+    - SylvainCorlay
