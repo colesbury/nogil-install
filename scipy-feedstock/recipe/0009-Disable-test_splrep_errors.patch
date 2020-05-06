@@ -1,0 +1,26 @@
+From 69c7411e7a743568ffd72f7dd4956a2d1b3a3f21 Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Mon, 18 Feb 2019 08:24:46 +0100
+Subject: [PATCH 9/9] Disable test_splrep_errors
+
+---
+ scipy/interpolate/tests/test_bsplines.py | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/scipy/interpolate/tests/test_bsplines.py b/scipy/interpolate/tests/test_bsplines.py
+index 8b666100f..f3db8c61a 100644
+--- a/scipy/interpolate/tests/test_bsplines.py
++++ b/scipy/interpolate/tests/test_bsplines.py
+@@ -615,8 +615,7 @@ class TestInterop(object):
+         b = BSpline(*tck)
+         assert_allclose(y, b(x), atol=1e-15)
+ 
+-    @pytest.mark.xfail(NumpyVersion(np.__version__) < '1.14.0',
+-                       reason='requires NumPy >= 1.14.0')
++    @pytest.mark.xfail(reason='requires SciPy to be built with NumPy >= 1.14.0')
+     def test_splrep_errors(self):
+         # test that both "old" and "new" splrep raise for an n-D ``y`` array
+         # with n > 1
+-- 
+2.19.1
+
