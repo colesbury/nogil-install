@@ -1,0 +1,130 @@
+{% set version = "2020.0" %}
+
+{% set year = version.split('.')[0]|int %}
+{% set update = version.split('.')[1]|int %}
+{% if version.split('.').__len__() == 2 %}
+{%  if update == 0 %}
+{%   set vtag = "%d" % year %}
+{%  else %}
+{%   set vtag = "%d_U%d" % (year, update) %}
+{%  endif %}
+{% else %}  # have to take into account for sake of the bot
+{%  set vtag = "malformed_" + version %}
+{% endif %}
+{% set vinterface = 11100 %}  # just guess, does not fit the previous versions before 2018
+
+{% set winfl = '--make-tool=mingw32-make --build-prefix=vc%VS_MAJOR%' %}
+# overriding -MD flag for issue #36
+{% set build = 'python build/build.py --build-args="CXXFLAGS= CFLAGS=" '+winfl %}    # [win]
+{% set build = 'python build/build.py --build-args="stdver=c++11 runtime=conda"' %}  # [unix]
+
+package:
+  name: tbb
+  version: {{ version }}
+
+source:
+  fn: tbb{{ vtag }}_oss_src.tgz
+  url: https://github.com/intel/tbb/archive/{{ vtag }}.tar.gz
+  sha256: db80f4f7abb95c2d08fe64abdc0a9250903e4c725f1c667ac517450de426023a
+
+build:
+  number: 0
+  skip: true  # [win and py2k]
+  script_env:
+    - OS    # [win]
+
+requirements:
+  build:
+    - python *
+    - {{ compiler('cxx') }}
+    - m2w64-make                                         # [win]
+    - make                                               # [unix]
+
+test:
+  requires:
+    - python <3.8               # any python version is ok for sake of testing of shared libraries
+  commands:
+    - python -c "import ctypes; assert {{ vinterface }} == ctypes.cdll[r'libtbb.so.2']       ['TBB_runtime_interface_version']()"  # [linux]
+    - python -c "import ctypes; assert {{ vinterface }} == ctypes.cdll[r'libtbb${SHLIB_EXT}']['TBB_runtime_interface_version']()"  # [unix and not linux]
+    - python -c "import ctypes; assert {{ vinterface }} == ctypes.cdll[r'tbb.dll']           ['TBB_runtime_interface_version']()"  # [win]
+
+outputs:
+  - name: tbb
+    build:
+      script: {{ build }} --install-libs
+
+  - name: tbb-devel
+    build:
+      script: {{ build }} --no-rebuild --install-devel --install-docs
+      run_exports:
+        # excellent compatibility: https://abi-laboratory.pro/index.php?view=timeline&l=tbb
+        - {{ pin_subpackage('tbb', max_pin=None) }}
+    requirements:
+      build:
+        - python *
+        - {{ compiler('cxx') }}
+        - m2w64-make                                     # [win]
+        - make                                           # [unix]
+        - cmake
+      run:
+        - {{ pin_subpackage('tbb', exact=True) }}        # development package is for specific version of tbb
+    test:
+      requires:
+        - {{ compiler('cxx') }}
+        - make                                           # [unix]
+        - cmake >=3.13
+      source_files:
+        - examples/test_all/fibonacci
+      commands:
+        - cd examples\test_all\fibonacci                    # [win]
+        - set INCLUDE=%INCLUDE%;%LIBRARY_INC%               # [win]
+        - set LIB=%LIB%;%LIBRARY_LIB%                       # [win]
+        - nmake /f Makefile.windows                         # [win]
+        - cmake -S examples/test_all/fibonacci -B test-bld  # [not win]
+        - cmake --build test-bld                            # [not win]
+        - cmake -E env test-bld/fibonacci                   # [not win]
+
+  - name: tbb4py
+    build:
+      script: {{ build }} --no-rebuild --install-python
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - m2w64-make                                     # [win]
+        - make                                           # [unix]
+        - swig
+        - make                                           # [unix]
+      host:
+        - python
+        - {{ pin_subpackage('tbb-devel', exact=True) }}
+      run:
+        - tbb >={{ version }}                            # while python module works with any compatible tbb...
+        - python
+    test:
+      requires:
+        - python
+        - {{ pin_subpackage('tbb', exact=True) }}        # we want to test with this specific tbb package
+      imports:
+        - tbb
+        - TBB
+      commands:
+        - python -m TBB -h
+        - python -m tbb -h
+        - python -m tbb test                             # [not osx]  # XXX fix it
+    about:
+      summary: TBB module for Python
+      license: Apache 2.0
+      dev_url: https://github.com/01org/tbb
+
+about:
+  home: http://www.threadingbuildingblocks.org
+  license: Apache 2.0
+  license_file: LICENSE
+  summary: High level abstract threading library
+  dev_url: https://github.com/01org/tbb
+  doc_url: https://software.intel.com/en-us/node/506039
+
+extra:
+  recipe-maintainers:
+    - anton-malakhov
+    - jschueller

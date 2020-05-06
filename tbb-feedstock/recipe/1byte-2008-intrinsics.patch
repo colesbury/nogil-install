@@ -1,0 +1,104 @@
+Index: include/tbb/machine/msvc_ia32_common.h
+===================================================================
+--- include/tbb/machine/msvc_ia32_common.h	(revision 20343)
++++ include/tbb/machine/msvc_ia32_common.h	(working copy)
+@@ -49,7 +49,7 @@
+     }}}
+ #endif
+ 
+-#if _MSC_VER>=1600 && (!__INTEL_COMPILER || __INTEL_COMPILER>=1310)
++#if __TBB_MSVC_INTERLOCKED_INTINSICS_PRESENT
+     // S is the operand size in bytes, B is the suffix for intrinsics for that size
+     #define __TBB_MACHINE_DEFINE_ATOMICS(S,B,T,U)                                           \
+     __pragma(intrinsic( _InterlockedCompareExchange##B ))                                   \
+@@ -75,7 +75,6 @@
+     #endif
+ 
+     #undef __TBB_MACHINE_DEFINE_ATOMICS
+-    #define __TBB_ATOMIC_PRIMITIVES_DEFINED
+ #endif /*_MSC_VER>=1600*/
+ 
+ #if _MSC_VER>=1300 || __INTEL_COMPILER>=1100
+Index: include/tbb/machine/windows_ia32.h
+===================================================================
+--- include/tbb/machine/windows_ia32.h	(revision 20343)
++++ include/tbb/machine/windows_ia32.h	(working copy)
+@@ -43,7 +43,7 @@
+     __int64 __TBB_EXPORTED_FUNC __TBB_machine_load8 (const volatile void *ptr);
+ }
+ 
+-#ifndef __TBB_ATOMIC_PRIMITIVES_DEFINED
++#if !__TBB_MSVC_INTERLOCKED_INTINSICS_PRESENT
+ 
+ #define __TBB_MACHINE_DEFINE_ATOMICS(S,T,U,A,C) \
+ static inline T __TBB_machine_cmpswp##S ( volatile void * ptr, U value, U comparand ) { \
+@@ -93,7 +93,7 @@
+ 
+ #undef __TBB_MACHINE_DEFINE_ATOMICS
+ 
+-#endif /*__TBB_ATOMIC_PRIMITIVES_DEFINED*/
++#endif /* __TBB_MSVC_INTERLOCKED_INTINSICS_PRESENT */
+ 
+ //TODO: Check if it possible and profitable for IA-32 architecture on (Linux and Windows)
+ //to use of 64-bit load/store via floating point registers together with full fence
+Index: include/tbb/machine/windows_intel64.h
+===================================================================
+--- include/tbb/machine/windows_intel64.h	(revision 20343)
++++ include/tbb/machine/windows_intel64.h	(working copy)
+@@ -29,7 +29,7 @@
+ 
+ #include "msvc_ia32_common.h"
+ 
+-#ifndef __TBB_ATOMIC_PRIMITIVES_DEFINED
++#if !__TBB_MSVC_INTERLOCKED_INTINSICS_PRESENT
+ 
+ #include <intrin.h>
+ #pragma intrinsic(_InterlockedCompareExchange,_InterlockedExchangeAdd,_InterlockedExchange)
+@@ -66,7 +66,7 @@
+     return _InterlockedExchange64( (__int64*)ptr, value );
+ }
+ 
+-#endif /*__TBB_ATOMIC_PRIMITIVES_DEFINED*/
++#endif /* __TBB_MSVC_INTERLOCKED_INTINSICS_PRESENT */
+ 
+ #define __TBB_USE_FETCHSTORE_AS_FULL_FENCED_STORE           1
+ #define __TBB_USE_GENERIC_HALF_FENCED_LOAD_STORE            1
+Index: include/tbb/tbb_config.h
+===================================================================
+--- include/tbb/tbb_config.h	(revision 20343)
++++ include/tbb/tbb_config.h	(working copy)
+@@ -729,6 +729,10 @@
+     #define __TBB_FORCE_64BIT_ALIGNMENT_BROKEN 0
+ #endif
+ 
++#if _MSC_VER>=1600 && (!__INTEL_COMPILER || __INTEL_COMPILER>=1310)
++    #define __TBB_MSVC_INTERLOCKED_INTINSICS_PRESENT 1
++#endif
++
+ #if __GNUC__ && !__INTEL_COMPILER && !__clang__ && __TBB_DEFAULTED_AND_DELETED_FUNC_PRESENT && __TBB_GCC_VERSION < 40700
+     #define __TBB_ZERO_INIT_WITH_DEFAULTED_CTOR_BROKEN 1
+ #endif
+Index: src/tbbmalloc/win64-tbbmalloc-export.def
+===================================================================
+--- src/tbbmalloc/win64-tbbmalloc-export.def	(revision 20343)
++++ src/tbbmalloc/win64-tbbmalloc-export.def	(working copy)
+@@ -1,5 +1,9 @@
+ EXPORTS
+ 
++#define __TBB_SYMBOL
++// Atomic presence macro needed
++#include "tbb/tbb_config.h"
++
+ ; frontend.cpp
+ scalable_calloc
+ scalable_free
+@@ -28,3 +32,9 @@
+ ?pool_aligned_realloc@rml@@YAPEAXPEAVMemoryPool@1@PEAX_K2@Z
+ ?pool_aligned_malloc@rml@@YAPEAXPEAVMemoryPool@1@_K1@Z
+ ?pool_identify@rml@@YAPEAVMemoryPool@1@PEAX@Z
++
++; atomics
++// Export if 1 byte intrinsics are unanavailable
++#if !__TBB_MSVC_INTERLOCKED_INTINSICS_PRESENT
++__TBB_machine_cmpswp1
++#endif
