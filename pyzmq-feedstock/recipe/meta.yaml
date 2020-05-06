@@ -1,4 +1,4 @@
-{% set version = "18.1.1" %}
+{% set version = "18.1.0" %}
 
 package:
   name: pyzmq
@@ -7,7 +7,7 @@ package:
 source:
   # We use the pypi URL as it includes the prepared Cython files.
   git_url: https://github.com/zeromq/pyzmq.git
-  git_rev: v18.1.1
+  git_rev: v{{ version }}
 
 build:
   number: 0
