@@ -5,8 +5,8 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/P/PyYAML/PyYAML-{{ version }}.tar.gz
-  sha256: b8eac752c5e14d3eca0e6dd9199cd627518cb5ec06add0de9d32baeee6fe645d
+  url: https://github.com/yaml/pyyaml/archive/{{ version }}.tar.gz
+  sha256: 56b26f182e2418fab806322706f8a715e1fdcd2d84cb4daa65d236064417a4fe
   patches:
     - 0001-Ensure-we-do-not-end-up-wih-CRLF-line-endings-on-tes.patch
 
