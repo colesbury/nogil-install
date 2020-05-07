@@ -43,13 +43,13 @@ requirements:
   run:
     - python
 
-test:
-  requires:
-    - pytest
-    - pytest-xdist
-    - mpmath
-    # see commend above
-    - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
+# test:
+#   requires:
+#     - pytest
+#     - pytest-xdist
+#     - mpmath
+#     # see commend above
+#     - intel-openmp {{ mkl }}  # [blas_impl == 'mkl']
 
 about:
   home: http://www.scipy.org/
