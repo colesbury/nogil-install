@@ -22,7 +22,7 @@ source:
       - patches/0002-Darwin-Add-arch-x86_64-to-UnicCCompiler-ld_args.patch
       - patches/0003-Win32-Change-FD_SETSIZE-from-512-to-2048.patch
       - patches/0004-Win32-distutils-Add-support-to-cygwinccompiler-for-V.patch
-      - patches/0005-Do-not-pass-g-to-GCC-when-not-Py_DEBUG.patch
+      #- patches/0005-Do-not-pass-g-to-GCC-when-not-Py_DEBUG.patch
       - patches/0006-Support-cross-compiling-byte-code.patch
       - patches/0007-Win32-Fixes-for-Windows-GCC-interop-needed-by-RPy2-a.patch
       - patches/0008-Darwin-Look-in-sysroot-usr-lib-include-if-sysroot-is.patch
@@ -76,7 +76,7 @@ source:
 
 
 build:
-  number: 5
+  number: 7
   # Windows has issues updating python if conda is using files itself.
   # Copy rather than link.
   no_link:
