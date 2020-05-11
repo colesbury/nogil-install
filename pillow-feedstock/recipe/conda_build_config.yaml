@@ -1,0 +1,8 @@
+# Pillow on windows has trouble openning certain
+# tiff files with 4.1
+# We temporarily enable a build with libtiff 4.0
+# for those that need it
+# https://github.com/conda-forge/pillow-feedstock/issues/69
+libtiff:
+  - 4.0  # [win]
+  - 4.1
