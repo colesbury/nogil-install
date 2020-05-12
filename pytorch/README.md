@@ -5,7 +5,7 @@ to match https://github.com/AnacondaRecipes/aggregate/blob/master/conda_build_co
 git clone https://github.com/pytorch/builder.git pytorch-builder
 cd pytorch-builder
 
-HOME=/scratch/$USER \ # on devfair
+HOME=/scratch/$USER \
 sudo docker run -it --ipc=host --rm -v $(pwd):/remote pytorch/conda-cuda bash
 
 yum install -y yum-utils centos-release-scl
