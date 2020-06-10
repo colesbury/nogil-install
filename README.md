@@ -2,8 +2,8 @@
 
 Conda build scripts for nogil Python and packages
 
-**Important**: add the line `add_pip_as_python_dependency: false` to your `~/.condarc` file or you'll have trouble
-building a new Python version from scratch. Conda adds `pip` as a default Python dependency, creating a circular
+**Important**: use `CONDA_ADD_PIP_AS_PYTHON_DEPENDENCY=0` to build Python. 
+Otherwise, conda adds `pip` as a default Python dependency, creating a circular
 dependency chain.
 
 ## Build and Install steps
@@ -16,7 +16,7 @@ Note that the build always has an error during test due to unsatisifiable packag
 
 ```
 cd python-feedstock
-conda build .
+CONDA_ADD_PIP_AS_PYTHON_DEPENDENCY=0 conda build .
 anaconda upload [filename]
 ```
 
