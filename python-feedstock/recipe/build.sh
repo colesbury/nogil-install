@@ -14,7 +14,7 @@ VER=${PKG_VERSION%.*}
 VERNODOTS=${VER//./}
 TCLTK_VER=${tk}
 # Disables some PGO/LTO
-QUICK_BUILD=no
+QUICK_BUILD=yes
 # Remove once: https://github.com/mingwandroid/conda-build/commit/c68a7d100866df7a3e9c0e3177fc7ef0ff76def9
 CONDA_FORGE=yes
 
@@ -27,10 +27,10 @@ _DISABLE_SHARED=--disable-shared
 # .. hack because we just build it shared in both the build-static and
 # build-shared directories.
 # Yes this hack is a bit confusing, sorry about that.
-if [[ ${PY_INTERP_LINKAGE_NATURE} == shared ]]; then
-  _DISABLE_SHARED=--enable-shared
-  _ENABLE_SHARED=--enable-shared
-fi
+#if [[ ${PY_INTERP_LINKAGE_NATURE} == shared ]]; then
+#  _DISABLE_SHARED=--enable-shared
+#  _ENABLE_SHARED=--enable-shared
+#fi
 
 # For debugging builds, set this to no to disable profile-guided optimization
 if [[ ${DEBUG_C} == yes ]]; then
@@ -38,7 +38,6 @@ if [[ ${DEBUG_C} == yes ]]; then
 else
   _OPTIMIZED=yes
 fi
-_OPTIMIZED=no
 
 # Since these take very long to build in our emulated ci, disable for now
 if [[ ${target_platform} == linux-aarch64 ]]; then
