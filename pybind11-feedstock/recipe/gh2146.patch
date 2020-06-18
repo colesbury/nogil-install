@@ -1,0 +1,393 @@
+From 724c5fbc3795cf6e5931aaedb42fa25df6363c75 Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 25 Mar 2020 17:59:19 -0500
+Subject: [PATCH 01/11] Error out eval_file
+
+---
+ include/pybind11/eval.h | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/include/pybind11/eval.h b/include/pybind11/eval.h
+index ea85ba1db..3d43d1ba0 100644
+--- a/include/pybind11/eval.h
++++ b/include/pybind11/eval.h
+@@ -66,6 +66,20 @@ void exec(const char (&s)[N], object global = globals(), object local = object()
+     eval<eval_statements>(s, global, local);
+ }
+ 
++#if defined(PYPY_VERSION)
++template <eval_mode mode = eval_statements>
++object eval_file(str, object, object) {
++    pybind11_fail("eval_file not supported in PyPy. Use eval");
++}
++template <eval_mode mode = eval_statements>
++object eval_file(str, object) {
++    pybind11_fail("eval_file not supported in PyPy. Use eval");
++}
++template <eval_mode mode = eval_statements>
++object eval_file(str) {
++    pybind11_fail("eval_file not supported in PyPy. Use eval");
++}
++#else
+ template <eval_mode mode = eval_statements>
+ object eval_file(str fname, object global = globals(), object local = object()) {
+     if (!local)
+@@ -113,5 +127,6 @@ object eval_file(str fname, object global = globals(), object local = object())
+         throw error_already_set();
+     return reinterpret_steal<object>(result);
+ }
++#endif
+ 
+ NAMESPACE_END(PYBIND11_NAMESPACE)
+
+From 01031f07e0f02ac05ad16b2ec1f959627a063b18 Mon Sep 17 00:00:00 2001
+From: Andreas Kloeckner <inform@tiker.net>
+Date: Wed, 25 Mar 2020 18:01:42 -0500
+Subject: [PATCH 02/11] Enable dynamic attribute support for Pypy >= 6
+
+---
+ include/pybind11/detail/class.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/pybind11/detail/class.h b/include/pybind11/detail/class.h
+index edfa7de68..5228f3d7f 100644
+--- a/include/pybind11/detail/class.h
++++ b/include/pybind11/detail/class.h
+@@ -448,7 +448,7 @@ extern "C" inline int pybind11_clear(PyObject *self) {
+ /// Give instances of this type a `__dict__` and opt into garbage collection.
+ inline void enable_dynamic_attributes(PyHeapTypeObject *heap_type) {
+     auto type = &heap_type->ht_type;
+-#if defined(PYPY_VERSION)
++#if defined(PYPY_VERSION) && (PYPY_VERSION_NUM < 0x06000000)
+     pybind11_fail(std::string(type->tp_name) + ": dynamic attributes are "
+                                                "currently not supported in "
+                                                "conjunction with PyPy!");
+
+From a5eb74031602151bf19e631c03aeefafae4e11cb Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 25 Mar 2020 18:32:12 -0500
+Subject: [PATCH 03/11] Add a test for dynamic attribute support
+
+---
+ tests/conftest.py                   | 2 ++
+ tests/test_multiple_inheritance.cpp | 2 +-
+ tests/test_multiple_inheritance.py  | 2 +-
+ 3 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/tests/conftest.py b/tests/conftest.py
+index 57f681c66..56de51fb7 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -215,6 +215,8 @@ def pytest_configure():
+     pytest.requires_eigen_and_scipy = skipif(
+         not have_eigen or not scipy, reason="eigen and/or scipy are not installed")
+     pytest.unsupported_on_pypy = skipif(pypy, reason="unsupported on PyPy")
++    pytest.unsupported_on_pypy_lt_6 = skipif(pypy and sys.pypy_version_info[0] < 6,
++                                             reason="unsupported on PyPy<6")
+     pytest.unsupported_on_py2 = skipif(sys.version_info.major < 3,
+                                        reason="unsupported on Python 2.x")
+     pytest.gc_collect = gc_collect
+diff --git a/tests/test_multiple_inheritance.cpp b/tests/test_multiple_inheritance.cpp
+index ba1674fb2..70e341785 100644
+--- a/tests/test_multiple_inheritance.cpp
++++ b/tests/test_multiple_inheritance.cpp
+@@ -193,7 +193,7 @@ TEST_SUBMODULE(multiple_inheritance, m) {
+         .def_readwrite_static("static_value", &VanillaStaticMix2::static_value);
+ 
+ 
+-#if !defined(PYPY_VERSION)
++#if !(defined(PYPY_VERSION) && (PYPY_VERSION_NUM < 0x06000000))
+     struct WithDict { };
+     struct VanillaDictMix1 : Vanilla, WithDict { };
+     struct VanillaDictMix2 : WithDict, Vanilla { };
+diff --git a/tests/test_multiple_inheritance.py b/tests/test_multiple_inheritance.py
+index 475dd3b3d..1c493f397 100644
+--- a/tests/test_multiple_inheritance.py
++++ b/tests/test_multiple_inheritance.py
+@@ -253,7 +253,7 @@ def test_mi_static_properties():
+         assert d.static_value == 0
+ 
+ 
+-@pytest.unsupported_on_pypy
++@pytest.unsupported_on_pypy_lt_6
+ def test_mi_dynamic_attributes():
+     """Mixing bases with and without dynamic attribute support"""
+ 
+
+From 6acb4baf3a79305623a8d12c50189997164c2ec0 Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 25 Mar 2020 18:34:22 -0500
+Subject: [PATCH 04/11] Skip test for eval_file on pypy
+
+---
+ tests/test_eval.py | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/tests/test_eval.py b/tests/test_eval.py
+index bda4ef6bf..556d031de 100644
+--- a/tests/test_eval.py
++++ b/tests/test_eval.py
+@@ -1,4 +1,5 @@
+ import os
++import pytest
+ from pybind11_tests import eval_ as m
+ 
+ 
+@@ -10,8 +11,11 @@ def test_evals(capture):
+     assert m.test_eval()
+     assert m.test_eval_single_statement()
+ 
++    assert m.test_eval_failure()
++
++@pytest.unsupported_on_pypy
++def test_eval_file():
+     filename = os.path.join(os.path.dirname(__file__), "test_eval_call.py")
+     assert m.test_eval_file(filename)
+ 
+-    assert m.test_eval_failure()
+     assert m.test_eval_file_failure()
+
+From 05d2fd4868ea1c7c74682d678dd5c9713fe53cbc Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 25 Mar 2020 19:01:41 -0500
+Subject: [PATCH 05/11] Workaround for __qualname__ on PyPy3
+
+---
+ include/pybind11/detail/class.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/pybind11/detail/class.h b/include/pybind11/detail/class.h
+index 5228f3d7f..6fc9862fa 100644
+--- a/include/pybind11/detail/class.h
++++ b/include/pybind11/detail/class.h
+@@ -15,7 +15,7 @@
+ NAMESPACE_BEGIN(PYBIND11_NAMESPACE)
+ NAMESPACE_BEGIN(detail)
+ 
+-#if PY_VERSION_HEX >= 0x03030000
++#if PY_VERSION_HEX >= 0x03030000 && !defined(PYPY_VERSION)
+ #  define PYBIND11_BUILTIN_QUALNAME
+ #  define PYBIND11_SET_OLDPY_QUALNAME(obj, nameobj)
+ #else
+
+From 10cc65b79cdc5ba899389d47900c339ef3f5c82d Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 25 Mar 2020 19:18:20 -0500
+Subject: [PATCH 06/11] Add a PyPy3.6 7.3.0 build
+
+---
+ .travis.yml | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
+
+diff --git a/.travis.yml b/.travis.yml
+index d81cd8c7b..d9ecb1421 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -143,8 +143,19 @@ matrix:
+   # Test a PyPy 2.7 build
+   - os: linux
+     dist: trusty
+-    env: PYPY=5.8 PYTHON=2.7 CPP=11 GCC=4.8
+-    name: PyPy 5.8, Python 2.7, c++11, gcc 4.8
++    env: PYPY=5.8.0 PYTHON=2.7 CPP=11 GCC=4.8
++    name: PyPy 5.8.0, Python 2.7, c++11, gcc 4.8
++    addons:
++      apt:
++        packages:
++          - libblas-dev
++          - liblapack-dev
++          - gfortran
++  # Test a PyPy 3.6 build
++  - os: linux
++    dist: trusty
++    env: PYPY=7.3.0 PYTHON=3.6 CPP=11 GCC=4.8
++    name: PyPy 7.3.0, Python 3.6, c++11, gcc 4.8
+     addons:
+       apt:
+         packages:
+@@ -211,9 +222,13 @@ before_install:
+     SCRIPT_RUN_PREFIX="docker exec --tty $containerid"
+     $SCRIPT_RUN_PREFIX sh -c 'for s in 0 15; do sleep $s; apt-get update && apt-get -qy dist-upgrade && break; done'
+   else
+-    if [ "$PYPY" = "5.8" ]; then
+-      curl -fSL https://bitbucket.org/pypy/pypy/downloads/pypy2-v5.8.0-linux64.tar.bz2 | tar xj
+-      PY_CMD=$(echo `pwd`/pypy2-v5.8.0-linux64/bin/pypy)
++    if [ "$PYPY" = "5.8.0" ]; then
++      curl -fSL https://bitbucket.org/pypy/pypy/downloads/pypy{PYTHON:0:1}-v{PYPY}-linux64.tar.bz2 | tar xj
++      PY_CMD=$(echo `pwd`/pypy${PYTHON:0:1}-v${PYPY}-linux64/bin/pypy)
++      CMAKE_EXTRA_ARGS+=" -DPYTHON_EXECUTABLE:FILEPATH=$PY_CMD"
++    elif [ -n "$PYPY" ]; then
++      curl -fSL https://bitbucket.org/pypy/pypy/downloads/pypy${PYTHON:0:2}-v${PYPY}-linux64.tar.bz2 | tar xj
++      PY_CMD=$(echo `pwd`/pypy${PYTHON:0:2}-v${PYPY}-linux64/bin/pypy)
+       CMAKE_EXTRA_ARGS+=" -DPYTHON_EXECUTABLE:FILEPATH=$PY_CMD"
+     else
+       PY_CMD=python$PYTHON
+
+From efe2d69fdcfd4484333aba35bc784664417a04c3 Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 25 Mar 2020 19:39:13 -0500
+Subject: [PATCH 07/11] Only disable in PyPy3
+
+---
+ include/pybind11/eval.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/include/pybind11/eval.h b/include/pybind11/eval.h
+index 3d43d1ba0..6308c646e 100644
+--- a/include/pybind11/eval.h
++++ b/include/pybind11/eval.h
+@@ -66,18 +66,18 @@ void exec(const char (&s)[N], object global = globals(), object local = object()
+     eval<eval_statements>(s, global, local);
+ }
+ 
+-#if defined(PYPY_VERSION)
++#if defined(PYPY_VERSION) && PY_VERSION_MAJOR < 3
+ template <eval_mode mode = eval_statements>
+ object eval_file(str, object, object) {
+-    pybind11_fail("eval_file not supported in PyPy. Use eval");
++    pybind11_fail("eval_file not supported in PyPy3. Use eval");
+ }
+ template <eval_mode mode = eval_statements>
+ object eval_file(str, object) {
+-    pybind11_fail("eval_file not supported in PyPy. Use eval");
++    pybind11_fail("eval_file not supported in PyPy3. Use eval");
+ }
+ template <eval_mode mode = eval_statements>
+ object eval_file(str) {
+-    pybind11_fail("eval_file not supported in PyPy. Use eval");
++    pybind11_fail("eval_file not supported in PyPy3. Use eval");
+ }
+ #else
+ template <eval_mode mode = eval_statements>
+
+From 6445bcce8682665618d0e57532ce5ec6b3f8d494 Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 25 Mar 2020 20:01:05 -0500
+Subject: [PATCH 08/11] Fix travis testing
+
+---
+ .travis.yml | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/.travis.yml b/.travis.yml
+index d9ecb1421..0166ffa5b 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -223,12 +223,15 @@ before_install:
+     $SCRIPT_RUN_PREFIX sh -c 'for s in 0 15; do sleep $s; apt-get update && apt-get -qy dist-upgrade && break; done'
+   else
+     if [ "$PYPY" = "5.8.0" ]; then
+-      curl -fSL https://bitbucket.org/pypy/pypy/downloads/pypy{PYTHON:0:1}-v{PYPY}-linux64.tar.bz2 | tar xj
+-      PY_CMD=$(echo `pwd`/pypy${PYTHON:0:1}-v${PYPY}-linux64/bin/pypy)
++      curl -fSL https://bitbucket.org/pypy/pypy/downloads/pypy2-v5.8.0-linux64.tar.bz2 | tar xj
++      PY_CMD=$(echo `pwd`/pypy2-v5.8.0-linux64/bin/pypy)
+       CMAKE_EXTRA_ARGS+=" -DPYTHON_EXECUTABLE:FILEPATH=$PY_CMD"
+     elif [ -n "$PYPY" ]; then
+-      curl -fSL https://bitbucket.org/pypy/pypy/downloads/pypy${PYTHON:0:2}-v${PYPY}-linux64.tar.bz2 | tar xj
+-      PY_CMD=$(echo `pwd`/pypy${PYTHON:0:2}-v${PYPY}-linux64/bin/pypy)
++      curl -fSL https://bitbucket.org/pypy/pypy/downloads/pypy${PYTHON:0:3}-v${PYPY}-linux64.tar.bz2 | tar xj
++      PY_CMD=$PWD/pypy${PYTHON:0:3}-v${PYPY}-linux64/bin/pypy
++      if [ "${PYTHON:0:1}" = "3" ]; then
++        PY_CMD="${PY_CMD}3"
++      fi
+       CMAKE_EXTRA_ARGS+=" -DPYTHON_EXECUTABLE:FILEPATH=$PY_CMD"
+     else
+       PY_CMD=python$PYTHON
+
+From 7e7e49b6ae68e2d47ec53d92db389f47cf17f186 Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 25 Mar 2020 20:38:08 -0500
+Subject: [PATCH 09/11] No numpy and scipy for pypy
+
+---
+ .travis.yml | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
+
+diff --git a/.travis.yml b/.travis.yml
+index 0166ffa5b..959e602d0 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -270,16 +270,14 @@ install:
+       export CXXFLAGS="-stdlib=libc++"
+     fi
+ 
+-    export NPY_NUM_BUILD_JOBS=2
+-    echo "Installing pytest, numpy, scipy..."
+     local PIP_CMD=""
+-    if [ -n $PYPY ]; then
+-      # For expediency, install only versions that are available on the extra index.
+-      travis_wait 30 \
+-        $PY_CMD -m pip install --user --upgrade --extra-index-url https://imaginary.ca/trusty-pypi \
+-          pytest numpy==1.15.4 scipy==1.2.0
++    export NPY_NUM_BUILD_JOBS=2
++    if [ -n "$PYPY" ]; then
++       echo Installing "pytest"
++       $PY_CMD -m pip install --user --upgrade pytest
+     else
+-      $PY_CMD -m pip install --user --upgrade pytest numpy scipy
++       echo "Installing pytest, numpy, scipy..."
++       $PY_CMD -m pip install --user --upgrade pytest numpy scipy
+     fi
+     echo "done."
+ 
+
+From b0ae1489202f86d86931cdd11a39f3817b3a2f3e Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 25 Mar 2020 21:08:05 -0500
+Subject: [PATCH 10/11] Enable test on pypy2
+
+---
+ tests/conftest.py  | 2 ++
+ tests/test_eval.py | 3 ++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/tests/conftest.py b/tests/conftest.py
+index 56de51fb7..82f9a0ed1 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -215,6 +215,8 @@ def pytest_configure():
+     pytest.requires_eigen_and_scipy = skipif(
+         not have_eigen or not scipy, reason="eigen and/or scipy are not installed")
+     pytest.unsupported_on_pypy = skipif(pypy, reason="unsupported on PyPy")
++    pytest.unsupported_on_pypy3 = skipif(pypy and sys.version_info.major >= 3,
++                                         reason="unsupported on PyPy3")
+     pytest.unsupported_on_pypy_lt_6 = skipif(pypy and sys.pypy_version_info[0] < 6,
+                                              reason="unsupported on PyPy<6")
+     pytest.unsupported_on_py2 = skipif(sys.version_info.major < 3,
+diff --git a/tests/test_eval.py b/tests/test_eval.py
+index 556d031de..94228e7d2 100644
+--- a/tests/test_eval.py
++++ b/tests/test_eval.py
+@@ -13,7 +13,8 @@ def test_evals(capture):
+ 
+     assert m.test_eval_failure()
+ 
+-@pytest.unsupported_on_pypy
++
++@pytest.unsupported_on_pypy3
+ def test_eval_file():
+     filename = os.path.join(os.path.dirname(__file__), "test_eval_call.py")
+     assert m.test_eval_file(filename)
+
+From a752c51bd11e676a0bbe95222dca595a733bdbfe Mon Sep 17 00:00:00 2001
+From: Isuru Fernando <isuruf@gmail.com>
+Date: Wed, 25 Mar 2020 21:54:14 -0500
+Subject: [PATCH 11/11] Fix logic in eval_file
+
+---
+ include/pybind11/eval.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/pybind11/eval.h b/include/pybind11/eval.h
+index 6308c646e..422e629f5 100644
+--- a/include/pybind11/eval.h
++++ b/include/pybind11/eval.h
+@@ -66,7 +66,7 @@ void exec(const char (&s)[N], object global = globals(), object local = object()
+     eval<eval_statements>(s, global, local);
+ }
+ 
+-#if defined(PYPY_VERSION) && PY_VERSION_MAJOR < 3
++#if defined(PYPY_VERSION) && PY_VERSION_HEX >= 0x3000000
+ template <eval_mode mode = eval_statements>
+ object eval_file(str, object, object) {
+     pybind11_fail("eval_file not supported in PyPy3. Use eval");
