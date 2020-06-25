@@ -1,16 +1,12 @@
 {% set version = "2.5.0" %}
-{% set sha256 = "97504db65640570f32d3fdf701c25a340c8643037c3b69aec469c10c93dc8504" %}
 
 package:
   name: pybind11
   version: {{ version }}
 
 source:
-  fn: pybind11-{{ version }}.tar.gz
-  url: https://github.com/pybind/pybind11/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-  patches:
-    - gh2146.patch
+  git_url: https://github.com/colesbury/pybind11
+  git_rev: nogil
 
 build:
   number: 0
