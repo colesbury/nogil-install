@@ -8,9 +8,8 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/PyAV-Org/PyAV.git
+  git_rev: v8.0.2
 
 build:
   number: {{ build_number }}

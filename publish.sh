@@ -3,6 +3,7 @@
 # Use `conda search --override-channels -c colesbury` to find
 # packages.
 anaconda copy colesbury/apipkg/1.5 --to-owner nogil
+anaconda copy colesbury/av/8.0.2 --to-owner nogil
 anaconda copy colesbury/certifi/2020.4.5.1 --to-owner nogil
 anaconda copy colesbury/cython/0.29.17 --to-owner nogil
 anaconda copy colesbury/h5py/2.10.0 --to-owner nogil
