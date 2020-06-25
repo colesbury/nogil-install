@@ -9,6 +9,7 @@ export CU_VERSION=cu101
 export PYTORCH_VERSION=1.5.1
 export PYTHON_VERSION=3.9
 ./packaging/build_conda.sh
+cp /opt/conda/conda-bld/linux-64/torchvision* .
 
 # PyTorch 1.4.1
 git clone https://github.com/colesbury/vision.git -b v0.5.0-nogil torchvision
@@ -20,4 +21,5 @@ export CU_VERSION=cu101
 export PYTORCH_VERSION=1.4.1
 export PYTHON_VERSION=3.9
 ./packaging/build_conda.sh
+cp /opt/conda/conda-bld/linux-64/torchvision* .
 ```
