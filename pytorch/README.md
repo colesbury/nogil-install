@@ -2,8 +2,11 @@ Note: need to edit meta.yaml numpy version from 1.11 to 1.14
 to match https://github.com/AnacondaRecipes/aggregate/blob/master/conda_build_config.yaml
 
 ```
-git clone https://github.com/pytorch/builder.git pytorch-builder
+git clone https://github.com/colesbury/builder.git -b nogil pytorch-builder
 cd pytorch-builder
+
+# delete old checkouts of PyTorch (important!)
+sudo git clean -xfd
 
 HOME=/scratch/$USER \
 sudo docker run -it --ipc=host --rm -v $(pwd):/remote pytorch/conda-cuda bash
