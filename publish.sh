@@ -15,7 +15,6 @@ anaconda copy colesbury/nose/1.3.7 --to-owner nogil
 anaconda copy colesbury/numpy/1.14.6 --to-owner nogil
 anaconda copy colesbury/numpy/1.14.6 --to-owner nogil
 anaconda copy colesbury/numpy/1.18.1 --to-owner nogil
-anaconda copy colesbury/numpy/1.18.1 --to-owner nogil
 anaconda copy colesbury/numpy-base/1.14.6 --to-owner nogil
 anaconda copy colesbury/numpy-base/1.18.1 --to-owner nogil
 anaconda copy colesbury/numpy-base/1.18.1 --to-owner nogil
@@ -26,15 +25,14 @@ anaconda copy colesbury/pillow/7.1.2 --to-owner nogil
 anaconda copy colesbury/pip/20.1 --to-owner nogil
 anaconda copy colesbury/pkgconfig/1.4.0 --to-owner nogil
 anaconda copy colesbury/pluggy/0.13.1 --to-owner nogil
-anaconda copy colesbury/pybind11/2.4.3 --to-owner nogil
+anaconda copy colesbury/pybind11/2.5.0 --to-owner nogil
 anaconda copy colesbury/pytest/5.4.1 --to-owner nogil
 anaconda copy colesbury/python/3.9.0 --to-owner nogil
 anaconda copy colesbury/pytorch/1.4.1 --to-owner nogil
+anaconda copy colesbury/pytorch/1.5.1 --to-owner nogil
 anaconda copy colesbury/pyyaml/5.3.1 --to-owner nogil
 anaconda copy colesbury/pyzmq/18.1.0 --to-owner nogil
 anaconda copy colesbury/scikit-learn/0.22.1 --to-owner nogil
-anaconda copy colesbury/scikit-learn/0.22.1 --to-owner nogil
-anaconda copy colesbury/scipy/1.4.1 --to-owner nogil
 anaconda copy colesbury/scipy/1.4.1 --to-owner nogil
 anaconda copy colesbury/sentencepiece/0.1.85 --to-owner nogil
 anaconda copy colesbury/setuptools/46.1.3 --to-owner nogil
