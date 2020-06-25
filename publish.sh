@@ -43,4 +43,5 @@ anaconda copy colesbury/tbb-devel/2020.0 --to-owner nogil
 anaconda copy colesbury/tbb4py/2020.0 --to-owner nogil
 anaconda copy colesbury/tokenizers/0.4.2 --to-owner nogil
 anaconda copy colesbury/torchvision/0.5.0.dev20200511 --to-owner nogil
+anaconda copy colesbury/torchvision/0.6.0.dev20200625 --to-owner nogil
 anaconda copy colesbury/wheel/0.34.2 --to-owner nogil
