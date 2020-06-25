@@ -1,0 +1,21 @@
+c_compiler:
+- vs2017
+channel_sources:
+- conda-forge,defaults
+channel_targets:
+- conda-forge main
+ffmpeg:
+- '4.2'
+numpy:
+- '1.14'
+pin_run_as_build:
+  ffmpeg:
+    max_pin: x.x
+  python:
+    min_pin: x.x
+    max_pin: x.x
+python:
+- 3.6.* *_cpython
+zip_keys:
+- - numpy
+  - python
