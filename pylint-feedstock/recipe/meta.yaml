@@ -1,0 +1,71 @@
+{% set version = "2.5.3" %}
+
+package:
+  name: pylint
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/p/pylint/pylint-{{ version }}.tar.gz
+  sha256: 7dd78437f2d8d019717dbf287772d0b2dbdfd13fc016aa7faa08d67bccc46adc
+
+build:
+  number: 0
+  skip: true  # [py<34]
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  entry_points:
+    - pylint = pylint:run_pylint
+    - epylint = pylint:run_epylint
+    - pyreverse = pylint:run_pyreverse
+    - symilar = pylint:run_symilar
+
+requirements:
+  host:
+    - python
+    - pip
+    - pytest-runner
+
+  run:
+    - astroid >=2.4.0,<2.5
+    - colorama  # [win]
+    - isort >=4.2.5,<5
+    - mccabe >=0.6,<0.7
+    - python
+    - toml >=0.7.1
+
+test:
+  imports:
+    - pylint
+    - pylint.checkers
+    - pylint.extensions
+    - pylint.pyreverse
+    - pylint.reporters
+    - pylint.reporters.ureports
+
+  commands:
+    - pylint --help
+    # Has no help option.
+    # Running without arguments is an error.
+    # So just check that it exists.
+    - type epylint  # [unix]
+    - where epylint  # [win]
+    - pyreverse --help
+    - symilar --help
+
+about:
+  home: http://www.pylint.org/
+  license: GPL-2.0-only
+  license_file: COPYING
+  summary: python code static checker
+  description: |
+    Pylint is a tool that checks for errors in Python code, tries to enforce a
+    coding standard and looks for code smells.
+  doc_url: https://pylint.readthedocs.io/en/latest/
+  doc_source_url: https://github.com/PyCQA/pylint/blob/master/doc/index.rst
+  dev_url: https://github.com/PyCQA/pylint/
+
+extra:
+  recipe-maintainers:
+    - jakirkham
+    - jjhelmus
+    - timleslie
+    - goanpeca
