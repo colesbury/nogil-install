@@ -14,13 +14,10 @@ anaconda copy colesbury/mkl_random/1.1.0 --to-owner nogil
 anaconda copy colesbury/mpmath/1.1.0 --to-owner nogil
 anaconda copy colesbury/nose/1.3.7 --to-owner nogil
 anaconda copy colesbury/numpy/1.14.6 --to-owner nogil
-anaconda copy colesbury/numpy/1.14.6 --to-owner nogil
 anaconda copy colesbury/numpy/1.18.1 --to-owner nogil
 anaconda copy colesbury/numpy-base/1.14.6 --to-owner nogil
 anaconda copy colesbury/numpy-base/1.18.1 --to-owner nogil
-anaconda copy colesbury/numpy-base/1.18.1 --to-owner nogil
 anaconda copy colesbury/numpy-devel/1.14.6 --to-owner nogil
-anaconda copy colesbury/numpy-devel/1.18.1 --to-owner nogil
 anaconda copy colesbury/numpy-devel/1.18.1 --to-owner nogil
 anaconda copy colesbury/pillow/7.1.2 --to-owner nogil
 anaconda copy colesbury/pip/20.1 --to-owner nogil

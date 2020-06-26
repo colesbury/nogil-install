@@ -1,0 +1,33 @@
+From 8018d68651ce22e6e89fa4ef38c80254515ac93b Mon Sep 17 00:00:00 2001
+From: Sam Gross <colesbury@gmail.com>
+Date: Fri, 26 Jun 2020 15:24:29 -0400
+Subject: [PATCH] nogil: disable cache
+
+---
+ numpy/core/src/multiarray/alloc.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/numpy/core/src/multiarray/alloc.c b/numpy/core/src/multiarray/alloc.c
+index a7f34cbe5..bd52f34f2 100644
+--- a/numpy/core/src/multiarray/alloc.c
++++ b/numpy/core/src/multiarray/alloc.c
+@@ -38,11 +38,15 @@
+ 
+ #define NBUCKETS 1024 /* number of buckets for data*/
+ #define NBUCKETS_DIM 16 /* number of buckets for dimensions/strides */
+-#define NCACHE 7 /* number of cache entries per bucket */
++#define NCACHE 0 /* number of cache entries per bucket */
+ /* this structure fits neatly into a cacheline */
+ typedef struct {
+     npy_uintp available; /* number of cached pointers */
++#if NCACHE > 0
+     void * ptrs[NCACHE];
++#else
++    void * ptrs[1];
++#endif
+ } cache_bucket;
+ static cache_bucket datacache[NBUCKETS];
+ static cache_bucket dimcache[NBUCKETS_DIM];
+-- 
+2.23.0
+

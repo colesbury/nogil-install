@@ -34,9 +34,10 @@ source:
     - 0014-Rewrite-inlining.patch
     {%- endif %}
     - 0020-nogil-use-Py_REFCNT-instead-of-ob_refcnt.patch
+    - 0021-nogil-disable-cache.patch
 
 build:
-  number: 4
+  number: 5
   skip: True  # [blas_impl == 'openblas' and win]
   force_use_keys:
     - python

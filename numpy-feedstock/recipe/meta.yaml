@@ -16,9 +16,11 @@ source:
       {%- endif %}
       - 0007-Obtain-and-prefer-custom-gfortran-from-env-variable.patch
       - 0020-nogil-use-Py_REFCNT-instead-of-ob_refcnt.patch
+      - 0021-nogil-disable-cache.patch
+      - 0022-nogil-use-bf_releasebuffer.patch
 
 build:
-  number: 1
+  number: 3
   skip: True  # [(blas_impl == 'openblas' and win) or py2k]
   force_use_keys:
     - python

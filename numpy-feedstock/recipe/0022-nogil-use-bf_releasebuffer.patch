@@ -1,0 +1,256 @@
+From 5cf6e1ddb71062b1f3b54e0c4eb8fd6272e81929 Mon Sep 17 00:00:00 2001
+From: Sam Gross <colesbury@gmail.com>
+Date: Fri, 26 Jun 2020 20:27:44 -0400
+Subject: [PATCH 22/22] nogil: use bf_releasebuffer
+
+Gets rid of the non-thread-safe cache of buffers. This breaks
+PyArg_ParseTuple("s#", ...). Oh, well.
+---
+ numpy/core/src/multiarray/buffer.c          | 139 +++-----------------
+ numpy/core/src/multiarray/npy_buffer.h      |   3 +
+ numpy/core/src/multiarray/scalartypes.c.src |   2 +-
+ 3 files changed, 21 insertions(+), 123 deletions(-)
+
+diff --git a/numpy/core/src/multiarray/buffer.c b/numpy/core/src/multiarray/buffer.c
+index 0edadee98..869fd78c3 100644
+--- a/numpy/core/src/multiarray/buffer.c
++++ b/numpy/core/src/multiarray/buffer.c
+@@ -494,10 +494,7 @@ typedef struct {
+  * we may need to keep track of multiple buffer infos for each array.
+  *
+  * However, when none of them has changed, the same buffer info may be reused.
+- *
+- * Thread-safety is provided by GIL.
+  */
+-static PyObject *_buffer_info_cache = NULL;
+ 
+ /* Fill in the info structure */
+ static _buffer_info_t*
+@@ -635,104 +632,6 @@ _buffer_info_free(_buffer_info_t *info)
+     free(info);
+ }
+ 
+-/* Get buffer info from the global dictionary */
+-static _buffer_info_t*
+-_buffer_get_info(PyObject *obj)
+-{
+-    PyObject *key = NULL, *item_list = NULL, *item = NULL;
+-    _buffer_info_t *info = NULL, *old_info = NULL;
+-
+-    if (_buffer_info_cache == NULL) {
+-        _buffer_info_cache = PyDict_New();
+-        if (_buffer_info_cache == NULL) {
+-            return NULL;
+-        }
+-    }
+-
+-    /* Compute information */
+-    info = _buffer_info_new(obj);
+-    if (info == NULL) {
+-        return NULL;
+-    }
+-
+-    /* Check if it is identical with an old one; reuse old one, if yes */
+-    key = PyLong_FromVoidPtr((void*)obj);
+-    if (key == NULL) {
+-        goto fail;
+-    }
+-    item_list = PyDict_GetItem(_buffer_info_cache, key);
+-
+-    if (item_list != NULL) {
+-        Py_INCREF(item_list);
+-        if (PyList_GET_SIZE(item_list) > 0) {
+-            item = PyList_GetItem(item_list, PyList_GET_SIZE(item_list) - 1);
+-            old_info = (_buffer_info_t*)PyLong_AsVoidPtr(item);
+-
+-            if (_buffer_info_cmp(info, old_info) == 0) {
+-                _buffer_info_free(info);
+-                info = old_info;
+-            }
+-        }
+-    }
+-    else {
+-        item_list = PyList_New(0);
+-        if (item_list == NULL) {
+-            goto fail;
+-        }
+-        if (PyDict_SetItem(_buffer_info_cache, key, item_list) != 0) {
+-            goto fail;
+-        }
+-    }
+-
+-    if (info != old_info) {
+-        /* Needs insertion */
+-        item = PyLong_FromVoidPtr((void*)info);
+-        if (item == NULL) {
+-            goto fail;
+-        }
+-        PyList_Append(item_list, item);
+-        Py_DECREF(item);
+-    }
+-
+-    Py_DECREF(item_list);
+-    Py_DECREF(key);
+-    return info;
+-
+-fail:
+-    if (info != NULL && info != old_info) {
+-        _buffer_info_free(info);
+-    }
+-    Py_XDECREF(item_list);
+-    Py_XDECREF(key);
+-    return NULL;
+-}
+-
+-/* Clear buffer info from the global dictionary */
+-static void
+-_buffer_clear_info(PyObject *arr)
+-{
+-    PyObject *key, *item_list, *item;
+-    _buffer_info_t *info;
+-    int k;
+-
+-    if (_buffer_info_cache == NULL) {
+-        return;
+-    }
+-
+-    key = PyLong_FromVoidPtr((void*)arr);
+-    item_list = PyDict_GetItem(_buffer_info_cache, key);
+-    if (item_list != NULL) {
+-        for (k = 0; k < PyList_GET_SIZE(item_list); ++k) {
+-            item = PyList_GET_ITEM(item_list, k);
+-            info = (_buffer_info_t*)PyLong_AsVoidPtr(item);
+-            _buffer_info_free(info);
+-        }
+-        PyDict_DelItem(_buffer_info_cache, key);
+-    }
+-
+-    Py_DECREF(key);
+-}
+-
+ /*
+  * Retrieving buffers for ndarray
+  */
+@@ -778,11 +677,12 @@ array_getbuffer(PyObject *obj, Py_buffer *view, int flags)
+     }
+ 
+     /* Fill in information */
+-    info = _buffer_get_info(obj);
++    info = _buffer_info_new(obj);
+     if (info == NULL) {
+         goto fail;
+     }
+ 
++    view->internal = info;
+     view->buf = PyArray_DATA(self);
+     view->suboffsets = NULL;
+     view->itemsize = PyArray_ITEMSIZE(self);
+@@ -797,7 +697,6 @@ array_getbuffer(PyObject *obj, Py_buffer *view, int flags)
+      */
+     view->readonly = (!PyArray_ISWRITEABLE(self) ||
+                       PyArray_CHKFLAGS(self, NPY_ARRAY_WARN_ON_WRITE));
+-    view->internal = NULL;
+     view->len = PyArray_NBYTES(self);
+     if ((flags & PyBUF_FORMAT) == PyBUF_FORMAT) {
+         view->format = info->format;
+@@ -856,6 +755,12 @@ fail:
+     return -1;
+ }
+ 
++static void
++array_releasebuffer(PyObject *obj, Py_buffer *view)
++{
++    _buffer_info_free((_buffer_info_t *)view->internal);
++}
++
+ /*
+  * Retrieving buffers for scalars
+  */
+@@ -872,11 +777,12 @@ gentype_getbuffer(PyObject *self, Py_buffer *view, int flags)
+     }
+ 
+     /* Fill in information */
+-    info = _buffer_get_info(self);
++    info = _buffer_info_new(self);
+     if (info == NULL) {
+         goto fail;
+     }
+ 
++    view->internal = info;
+     view->ndim = info->ndim;
+     view->shape = info->shape;
+     view->strides = info->strides;
+@@ -914,6 +820,12 @@ fail:
+     return -1;
+ }
+ 
++void
++gentype_releasebuffer(PyObject *obj, Py_buffer *view)
++{
++    _buffer_info_free(view->internal);
++}
++
+ /*
+  * NOTE: for backward compatibility (esp. with PyArg_ParseTuple("s#", ...))
+  * we do *not* define bf_releasebuffer at all.
+@@ -929,23 +841,6 @@ fail:
+ NPY_NO_EXPORT void
+ _dealloc_cached_buffer_info(PyObject *self)
+ {
+-    int reset_error_state = 0;
+-    PyObject *ptype, *pvalue, *ptraceback;
+-
+-    /* This function may be called when processing an exception --
+-     * we need to stash the error state to avoid confusing PyDict
+-     */
+-
+-    if (PyErr_Occurred()) {
+-        reset_error_state = 1;
+-        PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+-    }
+-
+-    _buffer_clear_info(self);
+-
+-    if (reset_error_state) {
+-        PyErr_Restore(ptype, pvalue, ptraceback);
+-    }
+ }
+ 
+ 
+@@ -959,7 +854,7 @@ NPY_NO_EXPORT PyBufferProcs array_as_buffer = {
+     (charbufferproc)array_getcharbuf,       /*bf_getcharbuffer*/
+ #endif
+     (getbufferproc)array_getbuffer,
+-    (releasebufferproc)0,
++    (releasebufferproc)array_releasebuffer,
+ };
+ 
+ 
+diff --git a/numpy/core/src/multiarray/npy_buffer.h b/numpy/core/src/multiarray/npy_buffer.h
+index fae413c85..78909e84b 100644
+--- a/numpy/core/src/multiarray/npy_buffer.h
++++ b/numpy/core/src/multiarray/npy_buffer.h
+@@ -12,4 +12,7 @@ _descriptor_from_pep3118_format(char *s);
+ NPY_NO_EXPORT int
+ gentype_getbuffer(PyObject *obj, Py_buffer *view, int flags);
+ 
++NPY_NO_EXPORT void
++gentype_releasebuffer(PyObject *obj, Py_buffer *view);
++
+ #endif
+diff --git a/numpy/core/src/multiarray/scalartypes.c.src b/numpy/core/src/multiarray/scalartypes.c.src
+index 5da7f7738..571c53df5 100644
+--- a/numpy/core/src/multiarray/scalartypes.c.src
++++ b/numpy/core/src/multiarray/scalartypes.c.src
+@@ -2621,7 +2621,7 @@ static PyBufferProcs gentype_as_buffer = {
+     gentype_getcharbuf,                          /* bf_getcharbuffer*/
+ #endif
+     gentype_getbuffer,                           /* bf_getbuffer */
+-    NULL,                                        /* bf_releasebuffer */
++    gentype_releasebuffer,                       /* bf_releasebuffer */
+ };
+ 
+ 
+-- 
+2.24.1
+
