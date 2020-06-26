@@ -1,0 +1,43 @@
+{% set version = "1.4.3" %}
+
+package:
+  name: lazy-object-proxy
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/l/lazy-object-proxy/lazy-object-proxy-{{ version }}.tar.gz
+  sha256: f3900e8a5de27447acbf900b4750b0ddfd7ec1ea7fbaf11dfa911141bc522af0
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - setuptools_scm >=3.3.1
+  run:
+    - python
+
+test:
+  imports:
+    - lazy_object_proxy
+    - lazy_object_proxy.cext
+
+about:
+  home: https://github.com/ionelmc/python-lazy-object-proxy
+  license: BSD-2-Clause
+  license_file: LICENSE
+  summary: 'A fast and thorough lazy object proxy'
+  doc_url: https://python-lazy-object-proxy.readthedocs.org
+  doc_source_url: https://github.com/ionelmc/python-lazy-object-proxy/blob/master/docs/index.rst
+  dev_url: https://github.com/ionelmc/python-lazy-object-proxy
+
+extra:
+  recipe-maintainers:
+    - jakirkham
+    - nehaljwani
+    - ocefpaf
