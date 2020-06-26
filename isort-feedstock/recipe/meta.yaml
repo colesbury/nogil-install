@@ -1,0 +1,53 @@
+{% set version = "4.3.21" %}
+
+package:
+  name: isort
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/i/isort/isort-{{ version }}.tar.gz
+  sha256: 54da7e92468955c4fceacd0c86bd0ec997b0e1ee80d97f67c35a78b719dccab1
+
+build:
+    number: 0
+    script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+    entry_points:
+    - isort = isort.main:main
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - setuptools
+    - futures  # [py<32]
+    - backports.functools_lru_cache  # [py<32]
+
+test:
+  imports:
+    - isort
+  commands:
+    - isort --help
+
+about:
+  home: https://github.com/timothycrosley/isort
+  license: MIT
+  license_file: LICENSE
+  summary: 'A Python utility / library to sort Python imports.'
+  description: |
+    isort is a Python utility / library to sort imports alphabetically, and
+    automatically separated into sections. It provides a command line utility,
+    Python library and plugins for various editors to quickly sort all your
+    imports. It currently cleanly supports Python 2.6 - 3.5 using pies to
+    achieve this without ugly hacks and/or py2to3.
+  doc_url: http://isort.readthedocs.io/en/latest/
+  doc_source_url: https://github.com/timothycrosley/isort/blob/develop/README.rst
+  dev_url: https://github.com/timothycrosley/isort
+
+extra:
+  recipe-maintainers:
+    - goanpeca
+    - nicoddemus
+    - nehaljwani
+    - ocefpaf
