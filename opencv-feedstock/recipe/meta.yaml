@@ -74,15 +74,16 @@ requirements:
     - harfbuzz                       # [unix]
     - libpng
     - ffmpeg                         # [not win]
-    - qt 5.12.1                      # [not osx]
+    - qt 5.9.7                       # [not osx]
     - liblapacke
     - freetype
   run:
     # https://github.com/conda-forge/harfbuzz-feedstock/pull/52
     - harfbuzz                       # [unix]
+    - libwebp >=1.0.1,<1.1.0a0
     # Don't depend on python in the run section
     # py-opencv will depend on python
-    - qt 5.12                        # [not osx]
+    - qt 5.9                         # [not osx]
     # https://github.com/conda-forge/opencv-feedstock/issues/174
     # Seems like the OSX ABI has changed between 2.9 and 2.10???
     # That or a dependency wasn't merged in
@@ -100,7 +101,7 @@ test:
       - liblapack * *mkl              # [py==37]
       - cmake
       - ninja
-      - qt 5.12.1                     # [linux]
+      - qt 5.9.7                      # [linux]
     files:
       - CMakeLists.txt
       - test.cpp

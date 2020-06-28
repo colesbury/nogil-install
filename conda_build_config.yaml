@@ -5,6 +5,14 @@ noarch_python:
   - python
 apr:
   - 1.6.3
+libblas:
+  - 3.8 *netlib
+libcblas:
+  - 3.8 *netlib
+liblapack:
+  - 3.8.0 *netlib
+liblapacke:
+  - 3.8.0 *netlib
 blas_impl:
   - mkl                        # [x86 or x86_64]
 boost:
@@ -122,7 +130,7 @@ libpng:
 libtiff:
   - 4.1
 libwebp:
-  - 1.0.0
+  - 1.0.1
 libxml2:
   - 2.9
 libxslt:
