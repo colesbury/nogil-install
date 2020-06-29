@@ -1,0 +1,24 @@
+c_compiler:
+- gcc
+c_compiler_version:
+- '7'
+channel_sources:
+- conda-forge,defaults
+channel_targets:
+- conda-forge main
+docker_image:
+- condaforge/linux-anvil-comp7
+libffi:
+- '3.2'
+openssl:
+- 1.1.1
+pin_run_as_build:
+  libffi:
+    max_pin: x.x
+  openssl:
+    max_pin: x.x.x
+  python:
+    min_pin: x.x
+    max_pin: x.x
+python:
+- '3.8'
