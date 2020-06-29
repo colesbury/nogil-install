@@ -31,6 +31,10 @@ _DISABLE_SHARED=--disable-shared
 #  _DISABLE_SHARED=--enable-shared
 #  _ENABLE_SHARED=--enable-shared
 #fi
+if [[ ${PY_INTERP_DEBUG} ]]; then
+  DEBUG_C=yes
+  DEBUG_PY=yes
+fi
 
 # For debugging builds, set this to no to disable profile-guided optimization
 if [[ ${DEBUG_C} == yes ]]; then
@@ -246,13 +250,13 @@ else
   _MAKE_TARGET=
 fi
 
-mkdir -p ${_buildd_shared}
-pushd ${_buildd_shared}
-  ${SRC_DIR}/configure "${_common_configure_args[@]}" \
-                       "${_dbg_opts[@]}" \
-                       --oldincludedir=${BUILD_PREFIX}/${HOST}/sysroot/usr/include \
-                       --enable-shared
-popd
+# mkdir -p ${_buildd_shared}
+# pushd ${_buildd_shared}
+#   ${SRC_DIR}/configure "${_common_configure_args[@]}" \
+#                        "${_dbg_opts[@]}" \
+#                        --oldincludedir=${BUILD_PREFIX}/${HOST}/sysroot/usr/include \
+#                        --enable-shared
+# popd
 
 mkdir -p ${_buildd_static}
 pushd ${_buildd_static}
@@ -270,17 +274,17 @@ if rg "Failed to build these modules" make-static.log; then
   exit 1
 fi
 
-make -j${CPU_COUNT} -C ${_buildd_shared} \
-        EXTRA_CFLAGS="${EXTRA_CFLAGS}" 2>&1 | tee make-shared.log
-if rg "Failed to build these modules" make-shared.log; then
-  echo "(shared) :: Failed to build some modules, check the log"
-  exit 1
-fi
+# make -j${CPU_COUNT} -C ${_buildd_shared} \
+#         EXTRA_CFLAGS="${EXTRA_CFLAGS}" 2>&1 | tee make-shared.log
+# if rg "Failed to build these modules" make-shared.log; then
+#   echo "(shared) :: Failed to build some modules, check the log"
+#   exit 1
+# fi
 
 # build a static library with PIC objects and without LTO/PGO
-make -j${CPU_COUNT} -C ${_buildd_shared} \
-        EXTRA_CFLAGS="${EXTRA_CFLAGS}" \
-        LIBRARY=libpython${VERABI}-pic.a libpython${VERABI}-pic.a
+# make -j${CPU_COUNT} -C ${_buildd_shared} \
+#         EXTRA_CFLAGS="${EXTRA_CFLAGS}" \
+#         LIBRARY=libpython${VERABI}-pic.a libpython${VERABI}-pic.a
 
 make -C ${_buildd_static} install
 
@@ -302,14 +306,14 @@ fi
 # Install the shared library (for people who embed Python only, e.g. GDB).
 # Linking module extensions to this on Linux is redundant (but harmless).
 # Linking module extensions to this on Darwin is harmful (multiply defined symbols).
-cp -pf ${_buildd_shared}/libpython*${SHLIB_EXT}* ${PREFIX}/lib/
-if [[ ${target_platform} =~ .*linux.* ]]; then
-  ln -sf ${PREFIX}/lib/libpython${VERABI}${SHLIB_EXT}.1.0 ${PREFIX}/lib/libpython${VERABI}${SHLIB_EXT}
-fi
+# cp -pf ${_buildd_shared}/libpython*${SHLIB_EXT}* ${PREFIX}/lib/
+# if [[ ${target_platform} =~ .*linux.* ]]; then
+#   ln -sf ${PREFIX}/lib/libpython${VERABI}${SHLIB_EXT}.1.0 ${PREFIX}/lib/libpython${VERABI}${SHLIB_EXT}
+# fi
 
 # If the LTO info in the normal lib is problematic (using different compilers for example
 # we also provide a 'nolto' version).
-cp -pf ${_buildd_shared}/libpython${VERABI}-pic.a ${PREFIX}/lib/libpython${VERABI}.nolto.a
+# cp -pf ${_buildd_shared}/libpython${VERABI}-pic.a ${PREFIX}/lib/libpython${VERABI}.nolto.a
 
 SYSCONFIG=$(find ${_buildd_static}/$(cat ${_buildd_static}/pybuilddir.txt) -name "_sysconfigdata*.py" -print0)
 cat ${SYSCONFIG} | ${SYS_PYTHON} "${RECIPE_DIR}"/replace-word-pairs.py \

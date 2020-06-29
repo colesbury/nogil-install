@@ -5,7 +5,7 @@
   {% set linkage_nature = "_" ~ linkage_nature %}
 {% endif %}
 {% if debug != '' %}
-  {% set debug = "_d" ~ debug %}
+  {% set debug = "_debug" %}
 {% endif %}
 
 package:
@@ -76,7 +76,7 @@ source:
 
 
 build:
-  number: 9
+  number: 10
   # Windows has issues updating python if conda is using files itself.
   # Copy rather than link.
   no_link:

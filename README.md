@@ -15,9 +15,10 @@ The following three are essential packages that depend on the Python version.
 Note that the build always has an error during test due to unsatisifiable packages. Not sure how to fix that yet.
 
 ```
-cd python-feedstock
-CONDA_ADD_PIP_AS_PYTHON_DEPENDENCY=0 conda build .
+CONDA_ADD_PIP_AS_PYTHON_DEPENDENCY=0 conda build python-feedstock
 anaconda upload [filename]
+# debug build
+PY_INTERP_DEBUG=1 conda build python-feedstock --label debug
 ```
 
 ### certifi
