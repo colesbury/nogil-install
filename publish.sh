@@ -6,6 +6,7 @@ dst=${dst:-nogil}
 anaconda copy colesbury/apipkg/1.5 --to-owner nogil
 anaconda copy colesbury/av/8.0.2 --to-owner nogil
 anaconda copy colesbury/certifi/2020.4.5.1 --to-owner nogil
+anaconda copy colesbury/cffi/1.14.0 --to-owner nogil
 anaconda copy colesbury/cython/0.29.17 --to-owner nogil
 anaconda copy colesbury/h5py/2.10.0 --to-owner nogil
 anaconda copy colesbury/libopencv/4.3.0 --to-owner nogil
