@@ -10,6 +10,7 @@ source:
   patches:
     - setup-linux.patch  # [not win]
     - 0001-Link-to-dl-library.patch
+    - 0002-Replace-Py_REFCNT-with-Py_SET_REFCNT.patch
 
 build:
   number: 1
