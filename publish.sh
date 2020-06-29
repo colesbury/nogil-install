@@ -2,11 +2,13 @@
 #
 # Use `conda search --override-channels -c colesbury` to find
 # packages.
+dst=${dst:-nogil}
 anaconda copy colesbury/apipkg/1.5 --to-owner nogil
 anaconda copy colesbury/av/8.0.2 --to-owner nogil
 anaconda copy colesbury/certifi/2020.4.5.1 --to-owner nogil
 anaconda copy colesbury/cython/0.29.17 --to-owner nogil
 anaconda copy colesbury/h5py/2.10.0 --to-owner nogil
+anaconda copy colesbury/libopencv/4.3.0 --to-owner nogil
 anaconda copy colesbury/magma-cuda101/2.5.2 --to-owner nogil
 anaconda copy colesbury/mkl-service/2.3.0 --to-owner nogil
 anaconda copy colesbury/mkl_fft/1.0.15 --to-owner nogil
@@ -19,11 +21,13 @@ anaconda copy colesbury/numpy-base/1.14.6 --to-owner nogil
 anaconda copy colesbury/numpy-base/1.18.1 --to-owner nogil
 anaconda copy colesbury/numpy-devel/1.14.6 --to-owner nogil
 anaconda copy colesbury/numpy-devel/1.18.1 --to-owner nogil
+anaconda copy colesbury/opencv/4.3.0 --to-owner nogil
 anaconda copy colesbury/pillow/7.1.2 --to-owner nogil
 anaconda copy colesbury/pip/20.1 --to-owner nogil
 anaconda copy colesbury/pkgconfig/1.4.0 --to-owner nogil
 anaconda copy colesbury/pluggy/0.13.1 --to-owner nogil
 anaconda copy colesbury/pybind11/2.5.0 --to-owner nogil
+anaconda copy colesbury/py-opencv/4.3.0 --to-owner nogil
 anaconda copy colesbury/pytest/5.4.1 --to-owner nogil
 anaconda copy colesbury/python/3.9.0 --to-owner nogil
 anaconda copy colesbury/pytorch/1.4.1 --to-owner nogil
@@ -42,3 +46,14 @@ anaconda copy colesbury/tokenizers/0.4.2 --to-owner nogil
 anaconda copy colesbury/torchvision/0.5.0.dev20200511 --to-owner nogil
 anaconda copy colesbury/torchvision/0.6.0.dev20200625 --to-owner nogil
 anaconda copy colesbury/wheel/0.34.2 --to-owner nogil
+
+# opencv dependencies
+anaconda copy conda-forge/ffmpeg/4.2.3 --to-owner $dst
+anaconda copy conda-forge/gmp/6.2.0 --to-owner $dst
+anaconda copy conda-forge/jpeg/9d --to-owner $dst
+anaconda copy conda-forge/libblas/3.8.0/linux-64/libblas-3.8.0-14_mkl.tar.bz2 --to-owner $dst
+anaconda copy conda-forge/libcblas/3.8.0/linux-64/libcblas-3.8.0-14_mkl.tar.bz2 --to-owner $dst
+anaconda copy conda-forge/liblapack/3.8.0/linux-64/liblapack-3.8.0-14_mkl.tar.bz2 --to-owner $dst
+anaconda copy conda-forge/liblapacke/3.8.0/linux-64/liblapacke-3.8.0-14_mkl.tar.bz2 --to-owner $dst
+anaconda copy conda-forge/openh264/2.1.1 --to-owner $dst
+anaconda copy "conda-forge/x264/1!152.20180806" --to-owner $dst
