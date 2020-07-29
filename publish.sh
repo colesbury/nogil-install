@@ -23,6 +23,7 @@ anaconda copy colesbury/numpy-base/1.18.1 --to-owner nogil
 anaconda copy colesbury/numpy-devel/1.14.6 --to-owner nogil
 anaconda copy colesbury/numpy-devel/1.18.1 --to-owner nogil
 anaconda copy colesbury/opencv/4.3.0 --to-owner nogil
+anaconda copy colesbury/pandas/1.0.5 --to-owner nogil
 anaconda copy colesbury/pillow/7.1.2 --to-owner nogil
 anaconda copy colesbury/pip/20.1 --to-owner nogil
 anaconda copy colesbury/pkgconfig/1.4.0 --to-owner nogil
