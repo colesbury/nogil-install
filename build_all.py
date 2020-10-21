@@ -50,10 +50,10 @@ deps = {
     "h5py": ["python", "pip", "numpy-1.14", "cython"],
     "mkl-service": ["setuptools", "cython"],
     "mkl_fft": ["numpy-1.14"],
-    "mkl_random": ["python", "pip", "numpy", "mkl-service"],
+    "mkl_random": ["python", "pip", "numpy-1.14", "mkl-service"],
     "mpmath": ["python"],
     "nose": ["python", "pip"],
-    "numpy-1.14": ["numpy"],
+    "numpy-1.14": ["cython", "mkl-service"],
     "numpy": ["cython", "mkl-service"],
     "numpy-metapackage": ["numpy"],
     "pillow": ["python", "pip"],
@@ -65,7 +65,7 @@ deps = {
     "python": [],
     "pyyaml": ["python", "cython"],
     "pyzmq": ["cython", "pip"],
-    "scikit-learn": ["cython", "pip", "mkl-service", "numpy", "scipy"],
+    "scikit-learn": ["cython", "pip", "scipy"],
     "scipy": ["numpy-1.14", "pybind11", "setuptools", "pip"],
     "sentencepiece": ["python"],
     "setuptools": ["python", "certifi"],
@@ -94,6 +94,7 @@ binary_pkgs = [
 no_test = {
     "python",
     "numpy-1.14",
+    "numpy-metapackage",
     "mkl_fft",
 }
 
