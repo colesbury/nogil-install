@@ -74,8 +74,8 @@ deps = {
     "wheel": ["python", "setuptools"],
 }
 
-jobids = {
-}
+skip = set()
+jobids = {}
 
 no_test = {
     "python",
@@ -94,6 +94,8 @@ parser.add_argument('--channel', '-c', default='nogil-staging',
                     help='dst channel')
 parser.add_argument('--dir', default='/fsx/sgross/builds',
                     help='build directory')
+parser.add_argument('--skip', default='/fsx/sgross/builds/skip.txt',
+                    help='builds to skip')
 
 def rendered_meta(pkg):
     return os.path.join("rendered", f"{pkg}.yaml")
@@ -141,6 +143,7 @@ def build_package(pkg):
 
 def build_packages(pkgs):
     launched = set()
+    launched += skip
     remaining = set(pkgs)
     last_size = -1
     while len(remaining) > 0:
@@ -157,8 +160,15 @@ def build_packages(pkgs):
 
 def main():
     os.chdir(args.dir)
-    build_package('pip')
-    # build_packages(packages)
+
+    if os.path.exists(args.skip):
+        with open(args.skip, 'r') as f:
+            for line in f.readliens():
+                skip.add(line)
+        print(f"skipping: {' '.join(skip)}", file=sys.stderr)
+
+    # build_package('pip')
+    build_packages(packages)
     # for pkg in packages:
     # parse_deps('numpy')
 
