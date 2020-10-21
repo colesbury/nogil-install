@@ -1,0 +1,186 @@
+---
+kind: pipeline
+name: linux_aarch64_python_abi_tagcp27mup_hbea7258249
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: Install and build
+  image: condaforge/linux-anvil-aarch64
+  environment:
+    CONFIG: linux_aarch64_python_abi_tagcp27mupython_implcpythonpython_impl_version2.7python_version2.7
+    UPLOAD_PACKAGES: True
+    PLATFORM: linux-aarch64
+    BINSTAR_TOKEN:
+      from_secret: BINSTAR_TOKEN
+    FEEDSTOCK_TOKEN:
+      from_secret: FEEDSTOCK_TOKEN
+    STAGING_BINSTAR_TOKEN:
+      from_secret: STAGING_BINSTAR_TOKEN
+  commands:
+    - export FEEDSTOCK_ROOT="$DRONE_WORKSPACE"
+    - export RECIPE_ROOT="$FEEDSTOCK_ROOT/recipe"
+    - export CI=drone
+    - export GIT_BRANCH="$DRONE_BRANCH"
+    - export FEEDSTOCK_NAME=$(basename ${DRONE_REPO_NAME})
+    - sed -i '$ichown -R conda:conda "$FEEDSTOCK_ROOT"' /opt/docker/bin/entrypoint
+    - /opt/docker/bin/entrypoint $FEEDSTOCK_ROOT/.scripts/build_steps.sh
+    - echo "Done building"
+
+---
+kind: pipeline
+name: linux_aarch64_python_abi_tagcp36mpy_he3b6597cdc
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: Install and build
+  image: condaforge/linux-anvil-aarch64
+  environment:
+    CONFIG: linux_aarch64_python_abi_tagcp36mpython_implcpythonpython_impl_version3.6python_version3.6
+    UPLOAD_PACKAGES: True
+    PLATFORM: linux-aarch64
+    BINSTAR_TOKEN:
+      from_secret: BINSTAR_TOKEN
+    FEEDSTOCK_TOKEN:
+      from_secret: FEEDSTOCK_TOKEN
+    STAGING_BINSTAR_TOKEN:
+      from_secret: STAGING_BINSTAR_TOKEN
+  commands:
+    - export FEEDSTOCK_ROOT="$DRONE_WORKSPACE"
+    - export RECIPE_ROOT="$FEEDSTOCK_ROOT/recipe"
+    - export CI=drone
+    - export GIT_BRANCH="$DRONE_BRANCH"
+    - export FEEDSTOCK_NAME=$(basename ${DRONE_REPO_NAME})
+    - sed -i '$ichown -R conda:conda "$FEEDSTOCK_ROOT"' /opt/docker/bin/entrypoint
+    - /opt/docker/bin/entrypoint $FEEDSTOCK_ROOT/.scripts/build_steps.sh
+    - echo "Done building"
+
+---
+kind: pipeline
+name: linux_aarch64_python_abi_tagcp37mpy_h1508286bb2
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: Install and build
+  image: condaforge/linux-anvil-aarch64
+  environment:
+    CONFIG: linux_aarch64_python_abi_tagcp37mpython_implcpythonpython_impl_version3.7python_version3.7
+    UPLOAD_PACKAGES: True
+    PLATFORM: linux-aarch64
+    BINSTAR_TOKEN:
+      from_secret: BINSTAR_TOKEN
+    FEEDSTOCK_TOKEN:
+      from_secret: FEEDSTOCK_TOKEN
+    STAGING_BINSTAR_TOKEN:
+      from_secret: STAGING_BINSTAR_TOKEN
+  commands:
+    - export FEEDSTOCK_ROOT="$DRONE_WORKSPACE"
+    - export RECIPE_ROOT="$FEEDSTOCK_ROOT/recipe"
+    - export CI=drone
+    - export GIT_BRANCH="$DRONE_BRANCH"
+    - export FEEDSTOCK_NAME=$(basename ${DRONE_REPO_NAME})
+    - sed -i '$ichown -R conda:conda "$FEEDSTOCK_ROOT"' /opt/docker/bin/entrypoint
+    - /opt/docker/bin/entrypoint $FEEDSTOCK_ROOT/.scripts/build_steps.sh
+    - echo "Done building"
+
+---
+kind: pipeline
+name: linux_aarch64_python_abi_tagcp38pyt_hb464efc5b1
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: Install and build
+  image: condaforge/linux-anvil-aarch64
+  environment:
+    CONFIG: linux_aarch64_python_abi_tagcp38python_implcpythonpython_impl_version3.8python_version3.8
+    UPLOAD_PACKAGES: True
+    PLATFORM: linux-aarch64
+    BINSTAR_TOKEN:
+      from_secret: BINSTAR_TOKEN
+    FEEDSTOCK_TOKEN:
+      from_secret: FEEDSTOCK_TOKEN
+    STAGING_BINSTAR_TOKEN:
+      from_secret: STAGING_BINSTAR_TOKEN
+  commands:
+    - export FEEDSTOCK_ROOT="$DRONE_WORKSPACE"
+    - export RECIPE_ROOT="$FEEDSTOCK_ROOT/recipe"
+    - export CI=drone
+    - export GIT_BRANCH="$DRONE_BRANCH"
+    - export FEEDSTOCK_NAME=$(basename ${DRONE_REPO_NAME})
+    - sed -i '$ichown -R conda:conda "$FEEDSTOCK_ROOT"' /opt/docker/bin/entrypoint
+    - /opt/docker/bin/entrypoint $FEEDSTOCK_ROOT/.scripts/build_steps.sh
+    - echo "Done building"
+
+---
+kind: pipeline
+name: linux_aarch64_python_abi_tagcp39pyt_hc2e205d194
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: Install and build
+  image: condaforge/linux-anvil-aarch64
+  environment:
+    CONFIG: linux_aarch64_python_abi_tagcp39python_implcpythonpython_impl_version3.9python_version3.9
+    UPLOAD_PACKAGES: True
+    PLATFORM: linux-aarch64
+    BINSTAR_TOKEN:
+      from_secret: BINSTAR_TOKEN
+    FEEDSTOCK_TOKEN:
+      from_secret: FEEDSTOCK_TOKEN
+    STAGING_BINSTAR_TOKEN:
+      from_secret: STAGING_BINSTAR_TOKEN
+  commands:
+    - export FEEDSTOCK_ROOT="$DRONE_WORKSPACE"
+    - export RECIPE_ROOT="$FEEDSTOCK_ROOT/recipe"
+    - export CI=drone
+    - export GIT_BRANCH="$DRONE_BRANCH"
+    - export FEEDSTOCK_NAME=$(basename ${DRONE_REPO_NAME})
+    - sed -i '$ichown -R conda:conda "$FEEDSTOCK_ROOT"' /opt/docker/bin/entrypoint
+    - /opt/docker/bin/entrypoint $FEEDSTOCK_ROOT/.scripts/build_steps.sh
+    - echo "Done building"
+
+---
+kind: pipeline
+name: linux_aarch64_python_abi_tagpypy36__h2eac2f98da
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: Install and build
+  image: condaforge/linux-anvil-aarch64
+  environment:
+    CONFIG: linux_aarch64_python_abi_tagpypy36_pp73python_implpypypython_impl_version7.3python_version3.6
+    UPLOAD_PACKAGES: True
+    PLATFORM: linux-aarch64
+    BINSTAR_TOKEN:
+      from_secret: BINSTAR_TOKEN
+    FEEDSTOCK_TOKEN:
+      from_secret: FEEDSTOCK_TOKEN
+    STAGING_BINSTAR_TOKEN:
+      from_secret: STAGING_BINSTAR_TOKEN
+  commands:
+    - export FEEDSTOCK_ROOT="$DRONE_WORKSPACE"
+    - export RECIPE_ROOT="$FEEDSTOCK_ROOT/recipe"
+    - export CI=drone
+    - export GIT_BRANCH="$DRONE_BRANCH"
+    - export FEEDSTOCK_NAME=$(basename ${DRONE_REPO_NAME})
+    - sed -i '$ichown -R conda:conda "$FEEDSTOCK_ROOT"' /opt/docker/bin/entrypoint
+    - /opt/docker/bin/entrypoint $FEEDSTOCK_ROOT/.scripts/build_steps.sh
+    - echo "Done building"
+

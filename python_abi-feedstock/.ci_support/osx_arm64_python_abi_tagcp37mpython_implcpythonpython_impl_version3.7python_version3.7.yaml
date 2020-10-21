@@ -1,0 +1,29 @@
+MACOSX_DEPLOYMENT_TARGET:
+- '11.0'
+channel_sources:
+- conda-forge/label/llvm_rc,conda-forge,https://conda-web.anaconda.org/conda-forge
+channel_targets:
+- conda-forge main
+macos_machine:
+- arm64-apple-darwin20.0.0
+pin_run_as_build:
+  python:
+    min_pin: x.x
+    max_pin: x.x
+python:
+- '2.7'
+python_abi_tag:
+- cp37m
+python_impl:
+- cpython
+python_impl_version:
+- '3.7'
+python_version:
+- '3.7'
+target_platform:
+- osx-arm64
+zip_keys:
+- - python_abi_tag
+  - python_version
+  - python_impl_version
+  - python_impl

@@ -1,0 +1,68 @@
+# This file was generated automatically from conda-smithy. To update this configuration,
+# update the conda-forge.yml and/or the recipe/meta.yaml.
+# -*- mode: yaml -*-
+
+jobs:
+- job: osx
+  pool:
+    vmImage: macOS-10.15
+  strategy:
+    matrix:
+      osx_64_python_abi_tagcp27mpython_implcpythonpython_impl_version2.7python_version2.7:
+        CONFIG: osx_64_python_abi_tagcp27mpython_implcpythonpython_impl_version2.7python_version2.7
+        UPLOAD_PACKAGES: 'True'
+      osx_64_python_abi_tagcp35mpython_implcpythonpython_impl_version3.5python_version3.5:
+        CONFIG: osx_64_python_abi_tagcp35mpython_implcpythonpython_impl_version3.5python_version3.5
+        UPLOAD_PACKAGES: 'True'
+      osx_64_python_abi_tagcp36mpython_implcpythonpython_impl_version3.6python_version3.6:
+        CONFIG: osx_64_python_abi_tagcp36mpython_implcpythonpython_impl_version3.6python_version3.6
+        UPLOAD_PACKAGES: 'True'
+      osx_64_python_abi_tagcp37mpython_implcpythonpython_impl_version3.7python_version3.7:
+        CONFIG: osx_64_python_abi_tagcp37mpython_implcpythonpython_impl_version3.7python_version3.7
+        UPLOAD_PACKAGES: 'True'
+      osx_64_python_abi_tagcp38python_implcpythonpython_impl_version3.8python_version3.8:
+        CONFIG: osx_64_python_abi_tagcp38python_implcpythonpython_impl_version3.8python_version3.8
+        UPLOAD_PACKAGES: 'True'
+      osx_64_python_abi_tagcp39python_implcpythonpython_impl_version3.9python_version3.9:
+        CONFIG: osx_64_python_abi_tagcp39python_implcpythonpython_impl_version3.9python_version3.9
+        UPLOAD_PACKAGES: 'True'
+      osx_64_python_abi_tagpypy36_pp73python_implpypypython_impl_version7.3python_version3.6:
+        CONFIG: osx_64_python_abi_tagpypy36_pp73python_implpypypython_impl_version7.3python_version3.6
+        UPLOAD_PACKAGES: 'True'
+      osx_arm64_python_abi_tagcp27mpython_implcpythonpython_impl_version2.7python_version2.7:
+        CONFIG: osx_arm64_python_abi_tagcp27mpython_implcpythonpython_impl_version2.7python_version2.7
+        UPLOAD_PACKAGES: 'True'
+      osx_arm64_python_abi_tagcp35mpython_implcpythonpython_impl_version3.5python_version3.5:
+        CONFIG: osx_arm64_python_abi_tagcp35mpython_implcpythonpython_impl_version3.5python_version3.5
+        UPLOAD_PACKAGES: 'True'
+      osx_arm64_python_abi_tagcp36mpython_implcpythonpython_impl_version3.6python_version3.6:
+        CONFIG: osx_arm64_python_abi_tagcp36mpython_implcpythonpython_impl_version3.6python_version3.6
+        UPLOAD_PACKAGES: 'True'
+      osx_arm64_python_abi_tagcp37mpython_implcpythonpython_impl_version3.7python_version3.7:
+        CONFIG: osx_arm64_python_abi_tagcp37mpython_implcpythonpython_impl_version3.7python_version3.7
+        UPLOAD_PACKAGES: 'True'
+      osx_arm64_python_abi_tagcp38python_implcpythonpython_impl_version3.8python_version3.8:
+        CONFIG: osx_arm64_python_abi_tagcp38python_implcpythonpython_impl_version3.8python_version3.8
+        UPLOAD_PACKAGES: 'True'
+      osx_arm64_python_abi_tagcp39python_implcpythonpython_impl_version3.9python_version3.9:
+        CONFIG: osx_arm64_python_abi_tagcp39python_implcpythonpython_impl_version3.9python_version3.9
+        UPLOAD_PACKAGES: 'True'
+      osx_arm64_python_abi_tagpypy36_pp73python_implpypypython_impl_version7.3python_version3.6:
+        CONFIG: osx_arm64_python_abi_tagpypy36_pp73python_implpypypython_impl_version7.3python_version3.6
+        UPLOAD_PACKAGES: 'True'
+    maxParallel: 8
+  timeoutInMinutes: 360
+
+  steps:
+  # TODO: Fast finish on azure pipelines?
+  - script: |
+      export CI=azure
+      export OSX_FORCE_SDK_DOWNLOAD="1"
+      export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+      export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+      ./.scripts/run_osx_build.sh
+    displayName: Run OSX build
+    env:
+      BINSTAR_TOKEN: $(BINSTAR_TOKEN)
+      FEEDSTOCK_TOKEN: $(FEEDSTOCK_TOKEN)
+      STAGING_BINSTAR_TOKEN: $(STAGING_BINSTAR_TOKEN)
