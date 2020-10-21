@@ -1,6 +1,6 @@
 {% set build_num = 1 %}
 {% if python_impl_version is not defined %}
-{% set python_impl_version = "3.6" %}
+{% set python_impl_version = "3.9" %}
 {% endif %}
 
 
@@ -15,11 +15,7 @@ build:
 
 requirements:
   run:
-    - python {{ python_impl_version }}.*                    # [python_impl == "cpython"]
-    - pypy{{ python_version }} {{ python_impl_version }}.*  # [python_impl == "pypy"]
-  run_constrained:
-    - pypy <0a0                                                                         # [python_impl == "cpython"]
-    - python {{ python_version }}.* *_{{ python_impl_version.replace('.', '') }}_pypy     # [python_impl == "pypy"]
+    - {{ pin_compatible('python', exact=True) }}
 
 test:
   commands:
