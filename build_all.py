@@ -142,8 +142,7 @@ def build_package(pkg):
     print("building {jobid}", file=sys.stderr)
 
 def build_packages(pkgs):
-    launched = set()
-    launched += skip
+    launched = set(skip)
     remaining = set(pkgs)
     last_size = -1
     while len(remaining) > 0:
