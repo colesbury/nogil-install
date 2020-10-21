@@ -139,7 +139,7 @@ def build_package(pkg):
 
     jobid = proc.stdout.decode('utf-8').strip().split(' ')[-1]
     jobids[pkg] = jobid
-    print("building {jobid}", file=sys.stderr)
+    print("building {jobid} {dependencies}", file=sys.stderr)
 
 def build_packages(pkgs):
     launched = set(skip)
@@ -150,6 +150,7 @@ def build_packages(pkgs):
             can_launch = all(dep in launched for dep in deps[pkg])
             if can_launch:
                 print(f'building {pkg}')
+                build_package(pkg)
                 launched.add(pkg)
         remaining -= launched
         if len(remaining) == last_size:
