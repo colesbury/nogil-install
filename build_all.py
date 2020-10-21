@@ -43,13 +43,13 @@ packages = [
 
 deps = {
     "apipkg": ["python", "pip", "setuptools"],
-    "av": ["python", "pip", "cython", "numpy", "pillow"],
+    "av": ["python", "pip", "cython", "numpy-1.14", "pillow"],
     "certifi": ["python"],
     "cffi": ["python", "pip"],
     "cython": ["python", "pip"],
-    "h5py": ["python", "pip", "numpy", "cython"],
+    "h5py": ["python", "pip", "numpy-1.14", "cython"],
     "mkl-service": ["setuptools", "cython"],
-    "mkl_fft": ["numpy"],
+    "mkl_fft": ["numpy-1.14"],
     "mpmath": ["python"],
     "nose": ["python", "pip"],
     "numpy-1.14": ["numpy"],
@@ -65,7 +65,7 @@ deps = {
     "pyyaml": ["python", "cython"],
     "pyzmq": ["cython", "pip"],
     "scikit-learn": ["cython", "pip", "mkl-service", "numpy", "scipy"],
-    "scipy": ["numpy", "pybind11", "setuptools", "pip"],
+    "scipy": ["numpy-1.14", "pybind11", "setuptools", "pip"],
     "sentencepiece": ["python"],
     "setuptools": ["python", "certifi"],
     "six": ["python", "pip"],
@@ -74,8 +74,9 @@ deps = {
     "wheel": ["python", "setuptools"],
 }
 
-skip = set()
-jobids = {}
+extra_channels = {
+    # "tokenizers": ["conda-forge"], ???
+}
 
 no_test = {
     "python",
@@ -83,9 +84,8 @@ no_test = {
     "mkl_fft",
 }
 
-include_conda_forge = [
-
-]
+skip = set()
+jobids = {}
 
 parser = argparse.ArgumentParser(description='Build all packages')
 parser.add_argument('--render-all', action='store_true', default=False,
