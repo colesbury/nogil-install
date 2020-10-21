@@ -46,7 +46,7 @@ deps = {
     "av": ["python", "pip", "cython", "numpy", "pillow"],
     "certifi": ["python"],
     "cffi": ["python", "pip"],
-    "cython": ["python"],
+    "cython": ["python", "pip"],
     "h5py": ["python", "pip", "numpy", "cython"],
     "mkl-service": ["setuptools", "cython"],
     "mkl_fft": ["numpy"],
