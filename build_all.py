@@ -137,6 +137,7 @@ def build_package(pkg):
 
     jobid = proc.stdout.decode('utf-8').strip().split(' ')[-1]
     jobids[pkg] = jobid
+    print("building {jobid}", file=sys.stderr)
 
 def build_packages(pkgs):
     launched = set()
