@@ -14,7 +14,7 @@ packages = [
     "h5py",
     "mkl-service",
     "mkl_fft",
-    # "mkl_random",
+    "mkl_random",
     "mpmath",
     "nose",
     "numpy-1.14",
@@ -43,13 +43,14 @@ packages = [
 
 deps = {
     "apipkg": ["python", "pip", "setuptools"],
-    "av": ["python", "pip", "cython", "numpy-1.14", "pillow"],
+    "av": ["python", "pip", "cython", "numpy-1.14", "pillow", "mkl_random"],
     "certifi": ["python"],
     "cffi": ["python", "pip"],
     "cython": ["python", "pip"],
     "h5py": ["python", "pip", "numpy-1.14", "cython"],
     "mkl-service": ["setuptools", "cython"],
     "mkl_fft": ["numpy-1.14"],
+    "mkl_random": ["python", "pip", "numpy", "mkl-service"],
     "mpmath": ["python"],
     "nose": ["python", "pip"],
     "numpy-1.14": ["numpy"],
@@ -78,6 +79,18 @@ extra_channels = {
     # "tokenizers": ["conda-forge"], ???
 }
 
+binary_pkgs = [
+    "conda-forge/ffmpeg/4.2.3",
+    "conda-forge/gmp/6.2.0",
+    "conda-forge/jpeg/9d",
+    "conda-forge/libblas/3.8.0/linux-64/libblas-3.8.0-14_mkl.tar.bz2",
+    "conda-forge/libcblas/3.8.0/linux-64/libcblas-3.8.0-14_mkl.tar.bz2",
+    "conda-forge/liblapack/3.8.0/linux-64/liblapack-3.8.0-14_mkl.tar.bz2",
+    "conda-forge/liblapacke/3.8.0/linux-64/liblapacke-3.8.0-14_mkl.tar.bz2",
+    "conda-forge/openh264/2.1.1",
+    "conda-forge/x264/1!152.20180806",
+]
+
 no_test = {
     "python",
     "numpy-1.14",
@@ -90,6 +103,8 @@ jobids = {}
 parser = argparse.ArgumentParser(description='Build all packages')
 parser.add_argument('--render-all', action='store_true', default=False,
                     help='render all recipes')
+parser.add_argument('--copy-binaries', action='store_true', default=False,
+                    help='copy necessary binary packages')
 parser.add_argument('--channel', '-c', default='nogil-staging',
                     help='dst channel')
 parser.add_argument('--dir', default='/fsx/sgross/builds',
@@ -160,8 +175,18 @@ def build_packages(pkgs):
             sys.exit(1)
         last_size = len(remaining)
 
+def copy_binaries():
+    for pkg in binary_pkgs:
+        proc = subprocess.run([
+            "anaconda", "copy", pkg, "--to-owner", args.channel,
+        ])
+
+
 def main():
     os.chdir(args.dir)
+
+    if args.copy_binaries:
+        copy_binaries()
 
     if os.path.exists(args.skip):
         with open(args.skip, 'r') as f:
