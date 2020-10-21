@@ -123,11 +123,20 @@ def build_package(pkg):
 
     output = f"{pkg}.txt"
 
+    dependencies = []
+    idlist = [jobids[dep] for dep in deps[pkg] if dep in jobids]
+    if len(idlist) > 0:
+        idlist = ':'.join(idlist)
+        dependencies = [f"--dependency=afterok:{idlist}"]
+
     proc = subprocess.run([
         "sbatch", "--output", output, "-e", output,
-        "--job-name", pkg, "-c", "4", "--wrap", f'"{cmd}"'
+        *dependencies
+        "--job-name", pkg, "-c", "4", "--wrap", cmd
     ], check=True, capture_output=True)
-    print(proc)
+
+    jobid = proc.stdout.decode('utf-8').strip().split(' ')[-1]
+    jobids[pkg] = jobid
 
 def build_packages(pkgs):
     launched = set()
