@@ -62,6 +62,7 @@ requirements:
     - {{ cdt('libxxf86vm') }}        # [linux]
   host:
     - python
+    - python_abi 3.9.* *_nogil
     - numpy
     - hdf5                           # [unix]
     - eigen 3.3.*
