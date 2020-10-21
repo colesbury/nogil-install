@@ -139,11 +139,12 @@ def build_package(pkg):
 
     jobid = proc.stdout.decode('utf-8').strip().split(' ')[-1]
     jobids[pkg] = jobid
-    print("building {jobid} {dependencies}", file=sys.stderr)
+    print(f"building {jobid} {dependencies}", file=sys.stderr)
 
 def build_packages(pkgs):
     launched = set(skip)
     remaining = set(pkgs)
+    remaining -= skip
     last_size = -1
     while len(remaining) > 0:
         for pkg in remaining:
