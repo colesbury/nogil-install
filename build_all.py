@@ -56,7 +56,7 @@ deps = {
     "numpy": ["cython", "mkl-service"],
     "numpy-metapackage": ["numpy"],
     "pillow": ["python", "pip"],
-    "pip": ["python"],
+    "pip": ["python", "setuptools"],
     "pkgconfig": ["python", "setuptools"],
     "pluggy": ["pip"],
     "pybind11": ["python", "setuptools"],
@@ -94,6 +94,7 @@ parser.add_argument('--channel', '-c', default='nogil-staging',
                     help='dst channel')
 parser.add_argument('--dir', default='/fsx/sgross/builds',
                     help='build directory')
+# conda search -c nogil-staging --override-channels | tail -n +3 | cut -d ' ' -f 1 > /fsx/sgross/builds/skip.txt
 parser.add_argument('--skip', default='/fsx/sgross/builds/skip.txt',
                     help='builds to skip')
 
