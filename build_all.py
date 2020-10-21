@@ -47,7 +47,7 @@ deps = {
     "certifi": ["python"],
     "cffi": ["python", "pip"],
     "cython": ["python", "pip"],
-    "h5py": ["python", "pip", "numpy-1.14", "cython"],
+    "h5py": ["python", "pip", "numpy-1.14", "cython", "six", "pkgconfig"],
     "mkl-service": ["setuptools", "cython"],
     "mkl_fft": ["numpy-1.14"],
     "mkl_random": ["python", "pip", "numpy-1.14", "mkl-service"],
@@ -60,7 +60,7 @@ deps = {
     "pandas": ["python", "pip", "cython", "numpy-1.14"],
     "pillow": ["python", "pip"],
     "pip": ["python", "setuptools"],
-    "pkgconfig": ["python", "setuptools"],
+    "pkgconfig": ["python", "pip", "nose"],
     "pluggy": ["pip"],
     "pybind11": ["python", "setuptools"],
     "pytest": ["python", "pip"],
@@ -98,6 +98,7 @@ no_test = {
     "numpy-1.14",
     "numpy-metapackage",
     "mkl_fft",
+    "tbb",
 }
 
 skip = set()
@@ -135,6 +136,12 @@ def render_missing():
             if not os.path.exists(rendered_meta(pkg)):
                 print(pkg)
                 e.submit(render, pkg)
+
+def build_pytorch():
+    pass
+
+def build_torchvision():
+    pass
 
 def build_package(pkg):
     cmd = f"/fsx/sgross/build_one_package.sh -c {args.channel} --user {args.channel}"
@@ -201,10 +208,7 @@ def main():
             else:
                 print(f"skipping: {pkg}", file=sys.stderr)
 
-    # build_package('pip')
     build_packages(packages)
-    # for pkg in packages:
-    # parse_deps('numpy')
 
 
 if __name__ == '__main__':
