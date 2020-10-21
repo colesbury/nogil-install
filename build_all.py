@@ -125,7 +125,7 @@ def build_package(pkg):
 
     proc = subprocess.run([
         "sbatch", "--output", output, "-e", output,
-        "--job-name", pgk, "-c", "4", "--wrap", f'"{cmd}"'
+        "--job-name", pkg, "-c", "4", "--wrap", f'"{cmd}"'
     ], check=True, capture_output=True)
     print(proc)
 
