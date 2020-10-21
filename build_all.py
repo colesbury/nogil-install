@@ -164,7 +164,11 @@ def main():
         with open(args.skip, 'r') as f:
             for line in f.readlines():
                 skip.add(line.strip())
-        print(f"skipping: {' '.join(skip)}", file=sys.stderr)
+        for pkg in skip:
+            if pkg not in packages:
+                print(f"warning: {pkg} not in list", file=sys.stderr)
+            else:
+                print(f"skipping: {pkg}", file=sys.stderr)
 
     # build_package('pip')
     build_packages(packages)
