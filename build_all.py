@@ -123,7 +123,7 @@ def build_package(pkg):
         cmd += " --no-test"
     cmd += f" {pkg}-feedstock"
 
-    output = f"{pkg}.txt"
+    output = f"{pkg}.log"
 
     dependencies = []
     idlist = [jobids[dep] for dep in deps[pkg] if dep in jobids]
