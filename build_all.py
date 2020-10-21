@@ -163,7 +163,7 @@ def main():
     if os.path.exists(args.skip):
         with open(args.skip, 'r') as f:
             for line in f.readlines():
-                skip.add(line)
+                skip.add(line.strip())
         print(f"skipping: {' '.join(skip)}", file=sys.stderr)
 
     # build_package('pip')
