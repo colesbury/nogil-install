@@ -92,6 +92,8 @@ parser.add_argument('--render-all', action='store_true', default=False,
                     help='render all recipes')
 parser.add_argument('--channel', '-c', default='nogil-staging',
                     help='dst channel')
+parser.add_argument('--dir', default='/fsx/sgross/builds',
+                    help='build directory')
 
 def rendered_meta(pkg):
     return os.path.join("rendered", f"{pkg}.yaml")
@@ -119,6 +121,8 @@ def build_package(pkg):
         cmd += " --no-test"
     cmd += f" {pkg}-feedstock"
 
+    output = f"{pkg}.txt"
+
     proc = subprocess.run([
         "sbatch", "--output", output, "-e", output,
         "--job-name", pgk, "-c", "4", "--wrap", f'"{cmd}"'
@@ -142,6 +146,7 @@ def build_packages(pkgs):
         last_size = len(remaining)
 
 def main():
+    os.chdir(args.dir)
     build_package('pip')
     # build_packages(packages)
     # for pkg in packages:
