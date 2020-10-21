@@ -25,11 +25,11 @@ requirements:
       - pip
       - mkl-devel
       - cython
-      - numpy
+      - numpy-base {{ numpy }}
     run:
       - python
       - mkl
-      - {{ pin_compatible('numpy') }}
+      - numpy >={{ numpy }},<2.0a0
 
 test:
     commands:
