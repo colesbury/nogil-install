@@ -11,7 +11,7 @@ source:
     patches:
       - 0001-Use-local-pyo3-package.patch
   - git_url: https://github.com/colesbury/pyo3
-    git_rev: master
+    git_rev: v0.8.4-nogil
     folder: pyo3
 
 build:
@@ -24,6 +24,7 @@ requirements:
     - rust-nightly >=1.43.0  # from -c powerai
   host:
     - python
+    - python_abi 3.9.* *_nogil
     - pip
     - setuptools-rust  # requires -c conda-forge (for noarch semantic_version)
   run:
