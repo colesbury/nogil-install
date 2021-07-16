@@ -14,7 +14,7 @@ package:
 
 source:
   - git_url: https://github.com/colesbury/nogil.git
-    git_rev: conda-v18
+    git_rev: tracewip
     patches:
 # {% if 'conda-forge' not in channel_targets %}
 #       - patches/0001-Add-Anaconda-Distribution-version-logic.patch
@@ -76,7 +76,7 @@ source:
 
 
 build:
-  number: 18
+  number: 19
   # Windows has issues updating python if conda is using files itself.
   # Copy rather than link.
   no_link:
