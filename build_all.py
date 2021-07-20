@@ -32,7 +32,8 @@ packages = [
     "pytest",
     "python",
     "python_abi",
-    "pytorch",
+    "pytorch-1.5",
+    "pytorch-1.9",
     "pyyaml",
     "pyzmq",
     "scikit-learn",
@@ -42,7 +43,8 @@ packages = [
     "six",
     "tbb",
     "tokenizers",
-    "torchvision",
+    "torchvision-0.6",
+    "torchvision-0.10",
     "wheel",
 ]
 
@@ -72,7 +74,8 @@ deps = {
     "pytest": ["python", "pip"],
     "python": [],
     "python_abi": ["python", "pip"],
-    "pytorch": ["python", "numpy-1.14", "numpy-metapackage"],
+    "pytorch-1.5": ["python", "numpy-1.14", "numpy-metapackage"],
+    "pytorch-1.9": ["python", "numpy-1.14", "numpy-metapackage"],
     "pyyaml": ["python", "cython"],
     "pyzmq": ["cython", "pip"],
     "scikit-learn": ["cython", "pip", "scipy"],
@@ -82,7 +85,8 @@ deps = {
     "six": ["python", "pip"],
     "tbb": ["python"],
     "tokenizers": ["python", "pip", "python_abi"],
-    "torchvision": ["python", "pytorch"],
+    "torchvision-0.6": ["python", "pytorch-1.5"],
+    "torchvision-0.10": ["python", "pytorch-1.9"],
     "wheel": ["python", "setuptools"],
 }
 
@@ -102,6 +106,7 @@ binary_pkgs = [
     "conda-forge/openh264/2.1.1",
     "conda-forge/x264/1!152.20180806",
     "pytorch/magma-cuda101/2.5.2",
+    "pytorch/magma-cuda110/2.5.2",
 ]
 
 no_test = {
@@ -118,8 +123,10 @@ no_test = {
 }
 
 cpus_needed = {
-    "pytorch": 32,
-    "torchvision": 32,
+    "pytorch-1.5": 32,
+    "pytorch-1.9": 32,
+    "torchvision-0.6": 32,
+    "torchvision-0.10": 32,
 }
 
 skip = set()
@@ -140,10 +147,10 @@ parser.add_argument('--skip', default='/fsx/sgross/builds/skip.txt',
 
 
 def build_package(pkg):
-    if pkg == 'pytorch':
-        cmd = os.path.join(args.dir, "build_pytorch.sh")
-    elif pkg == 'torchvision':
-        cmd = os.path.join(args.dir, "build_torchvision.sh")
+    if pkg.startswith('pytorch'):
+        cmd = os.path.join(args.dir, f"build_{pkg}.sh")
+    elif pkg.startswith('torchvision'):
+        cmd = os.path.join(args.dir, f"build_{pkg}.sh")
     else:
         script = os.path.join(args.dir, "build_one_package.sh")
         channels = [args.channel] + extra_channels.get(pkg, [])
@@ -207,8 +214,10 @@ def main():
     os.makedirs(args.dir, exist_ok=True)
 
     shutil.copy("build_one_package.sh", args.dir)
-    shutil.copy("pytorch/build_pytorch.sh", args.dir)
-    shutil.copy("torchvision/build_torchvision.sh", args.dir)
+    shutil.copy("pytorch/build_pytorch-1.5.sh", args.dir)
+    shutil.copy("pytorch/build_pytorch-1.9.sh", args.dir)
+    shutil.copy("torchvision/build_torchvision-0.6.sh", args.dir)
+    shutil.copy("torchvision/build_torchvision-0.10.sh", args.dir)
 
     os.chdir(args.dir)
 

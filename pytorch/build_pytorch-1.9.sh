@@ -11,23 +11,25 @@ if ! sudo docker version > /dev/null; then
     newgrp docker  # activate group
 fi
 
+docker run hello-world
+
 CHANNEL=${CHANNEL:-colesbury}
 echo "CHANNEL=${CHANNEL}"
 
-git clone https://github.com/colesbury/builder.git -b nogil pytorch-builder
-git clone https://github.com/colesbury/pytorch.git -b v1.5.1-nogil pytorch
+git clone https://github.com/colesbury/builder.git -b 1.9-nogil pytorch-builder
+git clone https://github.com/colesbury/pytorch.git -b v1.9.0-nogil pytorch
 
 HOME=$tmpdir \
 docker run --ipc=host --rm \
     -e PACKAGE_TYPE=conda \
-    -e DESIRED_CUDA=cu101 \
+    -e DESIRED_CUDA=cu110 \
     -e DESIRED_PYTHON=3.9 \
-    -e PYTORCH_BUILD_VERSION=1.5.1 \
+    -e PYTORCH_BUILD_VERSION=1.9.0 \
     -e PYTORCH_BUILD_NUMBER=1 \
     -e PYTORCH_FINAL_PACKAGE_DIR="/final_pkgs" \
     -e TORCH_CONDA_BUILD_FOLDER=pytorch-nightly \
     -e PYTORCH_REPO=colesbury \
-    -e PYTORCH_BRANCH=v1.5.1-nogil \
+    -e PYTORCH_BRANCH=v1.9.0-nogil \
     -e ANACONDA_USER="${CHANNEL}" \
     -v "$(pwd)/pytorch":/pytorch \
     -v "$(pwd)/pytorch-builder":/builder \
