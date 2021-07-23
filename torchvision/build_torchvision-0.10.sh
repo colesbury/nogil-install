@@ -14,14 +14,14 @@ fi
 CHANNEL=${CHANNEL:-colesbury}
 echo "CHANNEL=${CHANNEL}"
 
-git clone https://github.com/colesbury/vision.git -b v0.6.1-nogil torchvision
+git clone https://github.com/colesbury/vision.git -b v0.10.0-nogil torchvision
 
 HOME=$tmpdir \
 docker run --ipc=host --rm \
     -e PACKAGE_TYPE=conda \
-    -e CU_VERSION=cu101 \
+    -e CU_VERSION=cu110 \
     -e PYTHON_VERSION=3.9 \
-    -e PYTORCH_VERSION=1.5.1 \
+    -e PYTORCH_VERSION=1.9.0 \
     -e CONDA_CHANNEL="${CHANNEL}" \
     -e PYTORCH_FINAL_PACKAGE_DIR="/final_pkgs" \
     -w /torchvision \

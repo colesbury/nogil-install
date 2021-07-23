@@ -11,7 +11,6 @@ anaconda copy $src/cffi/1.14.0 --to-owner nogil
 anaconda copy $src/cython/0.29.17 --to-owner nogil
 anaconda copy $src/h5py/2.10.0 --to-owner nogil
 anaconda copy $src/libopencv/4.3.0 --to-owner nogil
-anaconda copy $src/magma-cuda101/2.5.2 --to-owner nogil
 anaconda copy $src/mkl-service/2.3.0 --to-owner nogil
 anaconda copy $src/mkl_fft/1.0.15 --to-owner nogil
 anaconda copy $src/mkl_random/1.1.0 --to-owner nogil
@@ -34,8 +33,8 @@ anaconda copy $src/py-opencv/4.3.0 --to-owner nogil
 anaconda copy $src/pytest/5.4.1 --to-owner nogil
 anaconda copy $src/python/3.9.0 --to-owner nogil
 anaconda copy $src/python_abi/3.9 --to-owner nogil
-anaconda copy $src/pytorch/1.4.1 --to-owner nogil
 anaconda copy $src/pytorch/1.5.1 --to-owner nogil
+anaconda copy $src/pytorch/1.9.0 --to-owner nogil
 anaconda copy $src/pyyaml/5.3.1 --to-owner nogil
 anaconda copy $src/pyzmq/18.1.0 --to-owner nogil
 anaconda copy $src/scikit-learn/0.22.1 --to-owner nogil
@@ -47,7 +46,6 @@ anaconda copy $src/tbb/2020.0 --to-owner nogil
 anaconda copy $src/tbb-devel/2020.0 --to-owner nogil
 anaconda copy $src/tbb4py/2020.0 --to-owner nogil
 anaconda copy $src/tokenizers/0.4.2 --to-owner nogil
-anaconda copy $src/torchvision/0.5.0.dev20200511 --to-owner nogil
 anaconda copy $src/torchvision/0.6.0.dev20201022 --to-owner nogil
 anaconda copy $src/wheel/0.34.2 --to-owner nogil
 
@@ -61,3 +59,5 @@ anaconda copy conda-forge/liblapack/3.8.0/linux-64/liblapack-3.8.0-14_mkl.tar.bz
 anaconda copy conda-forge/liblapacke/3.8.0/linux-64/liblapacke-3.8.0-14_mkl.tar.bz2 --to-owner $dst
 anaconda copy conda-forge/openh264/2.1.1 --to-owner $dst
 anaconda copy "conda-forge/x264/1!152.20180806" --to-owner $dst
+anaconda copy pytorch/magma-cuda101/2.5.2 --to-owner $dst
+anaconda copy pytorch/magma-cuda110/2.5.2 --to-owner $dst
