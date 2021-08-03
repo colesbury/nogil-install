@@ -6,6 +6,9 @@ tmpdir=$(mktemp -d /scratch/torchvision.XXXXXX)
 pushd $tmpdir
 
 if ! sudo docker version > /dev/null; then
+    sudo killall -9 unattended-upgrade unattended-upgrade-shutdown || true
+    sleep 1
+    sudo killall -9 unattended-upgrade unattended-upgrade-shutdown || true
     sudo apt install -y docker.io
     sudo usermod -aG docker $USER  # add myself to docker group
     newgrp docker  # activate group
