@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
+
 BUCKET=pypi.sam-gross.com
+DISTRIBUTION_ID=E24KCXAB5NQNKG
 
 dirs=$(aws s3 ls $BUCKET | grep PRE | awk -F'PRE ' '{print $2}')
 
@@ -27,3 +29,5 @@ EOF
 
 aws s3 cp "$index" "s3://$BUCKET/index.html"
 rm $index
+
+aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/"
