@@ -7,7 +7,9 @@ source $MY_DIR/build-common.sh
 wheel="$1"
 filename=$(basename $wheel)
 IFS=- read package the_rest <<< "$filename"
+
 BUCKET=pypi.sam-gross.com
+DISTRIBUTION_ID=E24KCXAB5NQNKG
 
 aws s3 cp "$wheel" "s3://$BUCKET/$filename"
 
@@ -25,3 +27,5 @@ EOF
 
 aws s3 cp "$index" "s3://$BUCKET/$package/index.html"
 rm $index
+
+aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/$package/" "/$filename"
