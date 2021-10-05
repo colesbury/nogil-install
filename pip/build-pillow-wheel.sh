@@ -11,8 +11,8 @@ yum install -y zlib libjpeg-devel libtiff-devel freetype-devel \
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
     pushd /io/builds
-    "${PYBIN}/pip" download "Pillow==8.3.1"
-    "${PYBIN}/pip" wheel Pillow-8.3.1.tar.gz -w /io/wheelhouse/
+    "${PYBIN}/pip" download "Pillow==8.3.2"
+    "${PYBIN}/pip" wheel Pillow-8.3.2.tar.gz -w /io/wheelhouse/
 done
 
-repair_wheel /io/wheelhouse/Pillow-8.3.1-nogil39-nogil_39_x86_64_linux_gnu-linux_x86_64.whl
+repair_wheel /io/wheelhouse/Pillow-8.3.2-nogil39-nogil_39_x86_64_linux_gnu-linux_x86_64.whl
