@@ -6,16 +6,17 @@ source $MY_DIR/build-common.sh
 
 wheel="$1"
 filename=$(basename $wheel)
-IFS=- read package the_rest <<< "$filename"
+IFS=- read prefix the_rest <<< "$filename"
 
 BUCKET=pypi.sam-gross.com
 DISTRIBUTION_ID=E24KCXAB5NQNKG
 
 aws s3 cp "$wheel" "s3://$BUCKET/$filename"
 
-packages=$(aws s3 ls $BUCKET | awk '{$1=$2=$3=""; print $0}' | sed 's/^[ \t]*//' | grep $package)
+files=$(aws s3 ls $BUCKET | awk '{$1=$2=$3=""; print $0}' | sed 's/^[ \t]*//' | grep $prefix)
 
 index=`mktemp index.XXXXX.html`
+package=$(echo "$prefix" | tr '_' '-' | tr '[:upper:]' '[:lower:]')
 echo "package=$package"
 
 
@@ -25,7 +26,7 @@ cat <<EOF >>$index
   <body>
 EOF
 
-for filename in $packages; do
+for filename in $files; do
 cat <<EOF >>$index
     <a href="/$filename">$filename</a>
 EOF
