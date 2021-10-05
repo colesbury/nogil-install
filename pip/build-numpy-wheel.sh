@@ -11,7 +11,12 @@ yum install -y openblas-devel
 
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
-    "${PYBIN}/pip" wheel /io/builds/numpy -w /io/wheelhouse/
+    "${PYBIN}/pip" wheel /io/builds/numpy-1.19.3 -w /io/wheelhouse/
 done
-
 repair_wheel /io/wheelhouse/numpy-1.19.3-nogil39-nogil_39_x86_64_linux_gnu-linux_x86_64.whl
+
+# Compile wheels
+for PYBIN in /opt/python/*/bin; do
+    "${PYBIN}/pip" wheel /io/builds/numpy-1.19.4 -w /io/wheelhouse/
+done
+repair_wheel /io/wheelhouse/numpy-1.19.4-nogil39-nogil_39_x86_64_linux_gnu-linux_x86_64.whl
