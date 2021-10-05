@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e
 
-docker run -v `pwd`:/io nogil/manylinux2014_x86_64 /io/build-pillow-wheel.sh
-./upload_wheel.sh wheelhouse/Pillow-8.3.2-nogil39-nogil_39_x86_64_linux_gnu-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+package=Pillow
+version=8.3.2
+yum_packages="zlib libjpeg-devel libtiff-devel freetype-devel lcms2-devel libwebp-devel harfbuzz-devel ghostscript libffi-devel ImageMagick fribidi-devel"
+
+source build-generic.sh
