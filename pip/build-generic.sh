@@ -1,7 +1,10 @@
+preinstall_file=${preinstall_file:-}
+
 docker run \
     -e package="$package" \
     -e version="$version" \
     -e yum_packages="$yum_packages" \
+    -e preinstall_file="$preinstall_file" \
     -v `pwd`:/io nogil/manylinux2014_x86_64 \
     /io/build-generic-wheel.sh
 
