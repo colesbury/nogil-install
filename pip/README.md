@@ -1,5 +1,5 @@
 Uses nogil/manylinux2014_x86_64 image.
-To rebuild image clong colesbury/manylinux -b nogil
+To rebuild image clone colesbury/manylinux -b nogil
 And run:
 
 ```

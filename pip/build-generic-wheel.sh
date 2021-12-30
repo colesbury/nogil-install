@@ -21,7 +21,6 @@ fi
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
     "${PYBIN}/pip" download --no-binary="$package" "$package==$version"
-    "${PYBIN}/pip" install numpy
     "${PYBIN}/pip" wheel "$package-$version.tar.gz" -w /io/wheelhouse/
 done
 
