@@ -17,11 +17,16 @@ fi
 if [[ ! -z "${preinstall_file}" ]]; then
     source "/io/$preinstall_file"
 fi
+if [[ ! -z "${github_branch}" ]]; then
+    curl -L "https://github.com/colesbury/$package/tarball/${github_branch}" -o "$package-$version.tar.gz"
+fi
 
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
-    "${PYBIN}/pip" download --no-binary="$package" "$package==$version"
+    if [[ -z "${github_branch}" ]]; then
+        "${PYBIN}/pip" download --no-binary="$package" "$package==$version"
+    fi
     "${PYBIN}/pip" wheel "$package-$version.tar.gz" -w /io/wheelhouse/
 done
 
-repair_wheel /io/wheelhouse/$filename-$version-nogil39-nogil_39_x86_64_linux_gnu-linux_x86_64.whl
+repair_wheel /io/wheelhouse/$filename-$version-nogil39-nogil_39*_x86_64_linux_gnu-linux_x86_64.whl

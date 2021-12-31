@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 function repair_wheel {
     wheel="$1"
     if ! auditwheel show "$wheel"; then
