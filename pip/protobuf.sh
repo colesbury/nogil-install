@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-package=matplotlib
-version=3.4.3
+package=protobuf
+version=3.18.0
 yum_packages=
 
 source build-generic.sh

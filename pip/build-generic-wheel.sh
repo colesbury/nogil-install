@@ -17,16 +17,32 @@ fi
 if [[ ! -z "${preinstall_file}" ]]; then
     source "/io/$preinstall_file"
 fi
-if [[ ! -z "${github_branch}" ]]; then
-    curl -L "https://github.com/colesbury/$package/tarball/${github_branch}" -o "$package-$version.tar.gz"
+if [[ ! -z "${preinstall_script}" ]]; then
+    eval "${preinstall_script}"
 fi
 
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
-    if [[ -z "${github_branch}" ]]; then
+    if [[ ! -z "${url}" ]]; then
+        "${PYBIN}/pip" wheel "${url}" -w /io/wheelhouse/
+    else
         "${PYBIN}/pip" download --no-binary="$package" "$package==$version"
+        "${PYBIN}/pip" wheel "$package-$version.tar.gz" -w /io/wheelhouse/
     fi
-    "${PYBIN}/pip" wheel "$package-$version.tar.gz" -w /io/wheelhouse/
 done
 
-repair_wheel /io/wheelhouse/$filename-$version-nogil39-nogil_39*_x86_64_linux_gnu-linux_x86_64.whl
+wheel="/io/wheelhouse/$filename-$version-nogil39-nogil_39b_x86_64_linux_gnu-linux_x86_64.whl"
+
+if [[ ! -z "${postinstall_script}" ]]; then
+    eval "${postinstall_script}"
+fi
+
+if [[ ! -f "$wheel" ]]; then
+    # orjson names the wheel incorrectly; fix it here
+    cpwheel="/io/wheelhouse/$filename-$version-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+    if [[ -f "$cpwheel" ]]; then
+        mv "$cpwheel" "$wheel"
+    fi
+fi
+
+repair_wheel "$wheel"
