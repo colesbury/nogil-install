@@ -14,7 +14,7 @@ docker run \
     -v `pwd`/pytorch:/pytorch \
     -v `pwd`/final_pkgs:/final_pkgs \
     -w /pytorch-builder/manywheel \
-    -e DESIRED_PYTHON=nogil39-nogil_39_x86_64_linux_gnu \
+    -e DESIRED_PYTHON=nogil39-nogil_39b_x86_64_linux_gnu \
     -e PYTORCH_BUILD_VERSION=1.9.0 \
     -e PYTORCH_BUILD_NUMBER=1 \
     -e PYTORCH_FINAL_PACKAGE_DIR=/final_pkgs \
