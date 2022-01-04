@@ -4,6 +4,6 @@ set -e
 package=pydantic
 version=1.8.2
 yum_packages=
-preinstall_script="/opt/python/*/bin/pip install cython"
+pip_packages=cython
 
 source build-generic.sh

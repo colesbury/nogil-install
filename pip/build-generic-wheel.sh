@@ -23,6 +23,9 @@ fi
 
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
+    if [[ ! -z "${pip_packages}" ]]; then
+        "${PYBIN}/pip" install "${pip_packages}"
+    fi
     if [[ ! -z "${url}" ]]; then
         "${PYBIN}/pip" wheel "${url}" -w /io/wheelhouse/
     else

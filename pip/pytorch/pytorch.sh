@@ -1,10 +1,10 @@
 #/bin/bash
 set -e
 
-if [ ! -e pytorch]; then
+if [[ ! -e pytorch ]]; then
     git clone https://github.com/colesbury/pytorch.git -j 20 --recurse-submodules -b v1.9.0-nogil
 fi
-if [ ! -e pytorch-builder]; then
+if [[ ! -e pytorch-builder ]]; then
     git clone https://github.com/colesbury/builder.git pytorch-builder -b 1.9-nogil
 fi
 mkdir -p final_pkgs

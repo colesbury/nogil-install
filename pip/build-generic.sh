@@ -8,6 +8,7 @@ docker run \
     -e url="$url" \
     -e preinstall_script="$preinstall_script" \
     -e postinstall_script="$postinstall_script" \
+    -e pip_packages="$pip_packages" \
     -v `pwd`:/io nogil/manylinux2014_x86_64 \
     /io/build-generic-wheel.sh
 
