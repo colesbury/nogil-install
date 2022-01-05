@@ -1,8 +1,7 @@
 #/bin/bash
 set -e
 
-SOABI="nogil39-nogil_39b_x86_64_linux_gnu"
-PYTHON_VERSION=3.9.9
+source ../build-common.sh
 
 function build_image {
     CUDA_IMAGE="$1"

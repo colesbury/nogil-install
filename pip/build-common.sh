@@ -1,5 +1,8 @@
 #!/bin/bash
 
+SOABI="nogil39-nogil_39b_x86_64_linux_gnu"
+PYTHON_VERSION=3.9.9
+
 function repair_wheel {
     wheel="$1"
     if ! auditwheel show "$wheel"; then
@@ -14,6 +17,6 @@ function repair_wheel {
 BUCKET=pypi.sam-gross.com
 
 function upload_wheel {
-    filename="$1"
-    aws s3 cp "$filename" "$BUCKET/$filename"
+    MY_DIR=$(dirname "${BASH_SOURCE[0]}")
+    $MY_DIR/upload_wheel.sh "$1"
 }

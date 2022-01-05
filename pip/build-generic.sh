@@ -13,7 +13,7 @@ docker run \
     /io/build-generic-wheel.sh
 
 filename=$(echo "$package" | tr '-' '_')
-wheel="wheelhouse/$filename-$version-nogil39-nogil_39b_x86_64_linux_gnu-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+wheel="wheelhouse/$filename-$version-$SOABI-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
 if [[ ! -f "$wheel" ]]; then
     wheel="wheelhouse/$filename-$version-py2.py3-none-any.whl"
 fi
