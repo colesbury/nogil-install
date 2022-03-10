@@ -1,3 +1,6 @@
+MY_DIR=$(dirname "${BASH_SOURCE[0]}")
+source $MY_DIR/build-common.sh
+
 preinstall_file=${preinstall_file:-}
 
 docker run \
@@ -15,10 +18,13 @@ docker run \
 filename=$(echo "$package" | tr '-' '_')
 wheel="wheelhouse/$filename-$version-$SOABI-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
 if [[ ! -f "$wheel" ]]; then
-    wheel="wheelhouse/$filename-$version-py2.py3-none-any.whl"
+    alt="wheelhouse/$filename-$version-py2.py3-none-any.whl"
+    if [[ -f "$alt" ]]; then
+        wheel="$alt"
+    fi
 fi
 if [[ ! -f "$wheel" ]]; then
-    echo "wheel not found!"
+    echo "wheel not found! (expected: $wheel)"
     exit 1
 fi
 ./upload_wheel.sh "$wheel"
