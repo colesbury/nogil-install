@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SOABI="nogil39-nogil_39b_x86_64_linux_gnu"
-PYTHON_VERSION=3.9.9
+PYTHON_VERSION=3.9.10
 
 function repair_wheel {
     wheel="$1"
