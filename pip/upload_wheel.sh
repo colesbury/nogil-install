@@ -13,6 +13,12 @@ DISTRIBUTION_ID=E24KCXAB5NQNKG
 
 aws s3 cp "$wheel" "s3://$BUCKET/$filename"
 
+if [[ $# -gt 1 ]]; then
+    sdist="$2"
+    sdist_filename=$(basename $sdist)
+    aws s3 cp "$sdist" "s3://$BUCKET/$sdist_filename"
+fi
+
 files=$(aws s3 ls $BUCKET | awk '{$1=$2=$3=""; print $0}' | sed 's/^[ \t]*//' | grep $prefix)
 
 index=`mktemp index.XXXXX.html`

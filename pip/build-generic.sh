@@ -27,4 +27,9 @@ if [[ ! -f "$wheel" ]]; then
     echo "wheel not found! (expected: $wheel)"
     exit 1
 fi
-./upload_wheel.sh "$wheel"
+sdist="wheelhouse/$package-$version.tar.gz"
+if [[ -f "$sdist" ]]; then
+    ./upload_wheel.sh "$wheel" "$sdist"
+else
+    ./upload_wheel.sh "$wheel"
+fi

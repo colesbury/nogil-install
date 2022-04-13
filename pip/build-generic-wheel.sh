@@ -27,7 +27,14 @@ for PYBIN in /opt/python/*/bin; do
         "${PYBIN}/pip" install "${pip_packages}"
     fi
     if [[ ! -z "${url}" ]]; then
-        "${PYBIN}/pip" wheel "${url}" -w /io/wheelhouse/
+        "${PYBIN}/pip" download "${url}"
+        "${PYBIN}/pip" wheel "$package-$version.zip" -w /io/wheelhouse/
+
+        unzip "$package-$version.zip"
+        pushd "$package"
+        "${PYBIN}/python" setup.py sdist
+        mv "dist/$package-$version.tar.gz" /io/wheelhouse/
+        popd
     else
         "${PYBIN}/pip" download --no-binary="$package" "$package==$version"
         "${PYBIN}/pip" wheel "$package-$version.tar.gz" -w /io/wheelhouse/
