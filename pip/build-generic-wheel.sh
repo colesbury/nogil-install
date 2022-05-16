@@ -5,41 +5,35 @@ MY_DIR=$(dirname "${BASH_SOURCE[0]}")
 source $MY_DIR/build-common.sh
 
 export NPY_NUM_BUILD_JOBS=20
+export SKLEARN_BUILD_PARALLEL=20
 
 yum_packages=${yum_packages:-}
 preinstall_file=${preinstall_file:-}
 filename=$(echo "$package" | tr '-' '_')
 
+export PATH="/opt/python/$SOABI/bin:$PATH"
+
 # Install a system package required by our library
 if [[ ! -z "${yum_packages}" ]]; then
     yum install -y $yum_packages
 fi
-if [[ ! -z "${preinstall_file}" ]]; then
-    source "/io/$preinstall_file"
-fi
 if [[ ! -z "${preinstall_script}" ]]; then
     eval "${preinstall_script}"
 fi
+if [[ ! -z "${preinstall_file}" ]]; then
+    source "/io/$preinstall_file"
+fi
 
 # Compile wheels
-for PYBIN in /opt/python/*/bin; do
-    if [[ ! -z "${pip_packages}" ]]; then
-        "${PYBIN}/pip" install "${pip_packages}"
-    fi
-    if [[ ! -z "${url}" ]]; then
-        "${PYBIN}/pip" download "${url}"
-        "${PYBIN}/pip" wheel "$package-$version.zip" -w /io/wheelhouse/
-
-        unzip "$package-$version.zip"
-        pushd "$package"
-        "${PYBIN}/python" setup.py sdist
-        mv "dist/$package-$version.tar.gz" /io/wheelhouse/
-        popd
-    else
-        "${PYBIN}/pip" download --no-binary="$package" "$package==$version"
-        "${PYBIN}/pip" wheel "$package-$version.tar.gz" -w /io/wheelhouse/
-    fi
-done
+if [[ ! -z "${pip_packages}" ]]; then
+    pip install $pip_packages
+fi
+if [[ ! -z "${url}" ]]; then
+    pip wheel "${url}" -w /io/wheelhouse/
+else
+    pip download --no-binary="$package" "$package==$version"
+    pip wheel "$package-$version.tar.gz" -w /io/wheelhouse/
+fi
 
 wheel="/io/wheelhouse/$filename-$version-nogil39-nogil_39b_x86_64_linux_gnu-linux_x86_64.whl"
 

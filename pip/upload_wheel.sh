@@ -32,9 +32,9 @@ cat <<EOF >>$index
   <body>
 EOF
 
-for filename in $files; do
+for file in $files; do
 cat <<EOF >>$index
-    <a href="/$filename">$filename</a>
+    <a href="/$file">$file</a>
 EOF
 done
 

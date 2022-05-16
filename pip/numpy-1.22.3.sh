@@ -6,6 +6,7 @@ set -e
 package=numpy
 version=1.22.3
 url="git+https://github.com/colesbury/numpy.git@v${version}-nogil"
-yum_packages="openblas-devel"
+preinstall_script="export NPY_USE_BLAS_ILP64=1"
+preinstall_file="preinstall-openblas.sh"
 
 source build-generic.sh
