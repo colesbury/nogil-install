@@ -24,6 +24,9 @@ if [[ ! -z "${preinstall_file}" ]]; then
     source "/io/$preinstall_file"
 fi
 
+# Delete old wheels (we don't to use them by accident)
+rm -f "/io/wheelhouse/$filename-$version-*.whl" || true
+
 # Compile wheels
 if [[ ! -z "${pip_packages}" ]]; then
     pip install $pip_packages
@@ -35,18 +38,25 @@ else
     pip wheel "$package-$version.tar.gz" -w /io/wheelhouse/
 fi
 
-wheel="/io/wheelhouse/$filename-$version-nogil39-nogil_39b_x86_64_linux_gnu-linux_x86_64.whl"
+wheels=($(find /io/wheelhouse/ -name "$filename-$version-*.whl"))
+if [ ${#wheels[@]} -eq 0 ]; then
+    echo "no wheel matching '$filename-$version-\*.whl'" >&2
+    exit 1
+elif [ ${#wheels[@]} -eq 1 ]; then
+    wheel=${wheels[0]}
+fi
 
 if [[ ! -z "${postinstall_script}" ]]; then
     eval "${postinstall_script}"
 fi
 
-if [[ ! -f "$wheel" ]]; then
+if [[ $wheel =~ "cp3-cp39-manylinux" ]]; then
     # orjson names the wheel incorrectly; fix it here
-    cpwheel="/io/wheelhouse/$filename-$version-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
-    if [[ -f "$cpwheel" ]]; then
-        mv "$cpwheel" "$wheel"
-    fi
+    fixed_wheel="/io/wheelhouse/$filename-$version-$SOABI-linux_x86_64.whl"
+    mv "$wheel" "$fixed_wheel"
+    wheel="$fixed_wheel"
 fi
 
-repair_wheel "$wheel"
+if [[ $wheel =~ "linux_x86_64.whl" ]]; then
+    repair_wheel "$wheel"
+fi

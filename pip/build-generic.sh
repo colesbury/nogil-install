@@ -18,7 +18,7 @@ docker run \
 filename=$(echo "$package" | tr '-' '_')
 wheel="wheelhouse/$filename-$version-$SOABI-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
 if [[ ! -f "$wheel" ]]; then
-    alt="wheelhouse/$filename-$version-py2.py3-none-any.whl"
+    alt=$(find wheelhouse -name "$filename-$version-*py3-none-any.whl")
     if [[ -f "$alt" ]]; then
         wheel="$alt"
     fi
