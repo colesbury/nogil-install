@@ -28,7 +28,7 @@ echo "package=$package"
 
 cat <<EOF >>$index
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <body>
 EOF
 

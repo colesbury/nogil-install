@@ -9,7 +9,7 @@ dirs=$(aws s3 ls $BUCKET | grep PRE | awk -F'PRE ' '{print $2}')
 index=`mktemp index.XXXXX.html`
 cat <<EOF >>$index
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <body>
 EOF
 
