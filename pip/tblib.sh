@@ -2,8 +2,7 @@
 set -e
 
 package=tblib
-version=1.7.0
-url="git+https://github.com/ionelmc/python-tblib@dd926c1e5dc5bbe5e1fc494443bbac8970c7d3ee"
-postinstall_script="wheel='/io/wheelhouse/$package-$version-py3-none-any.whl'"
+version=1.7.1
+url="git+https://github.com/colesbury/python-tblib@v${version}"
 
 source build-generic.sh
