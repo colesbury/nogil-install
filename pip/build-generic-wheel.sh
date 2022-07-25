@@ -21,7 +21,7 @@ if [[ ! -z "${preinstall_script}" ]]; then
     eval "${preinstall_script}"
 fi
 if [[ ! -z "${preinstall_file}" ]]; then
-    source "/io/$preinstall_file"
+    source /io/$preinstall_file
 fi
 
 # Delete old wheels (we don't to use them by accident)
@@ -32,18 +32,24 @@ if [[ ! -z "${pip_packages}" ]]; then
     pip install $pip_packages
 fi
 if [[ ! -z "${url}" ]]; then
-    pip wheel "${url}" -w /io/wheelhouse/
+    pip wheel -vvv "${url}" -w /io/wheelhouse/
 else
     pip download --no-binary="$package" "$package==$version"
     pip wheel "$package-$version.tar.gz" -w /io/wheelhouse/
 fi
 
 wheels=($(find /io/wheelhouse/ -name "$filename-$version-*.whl"))
+if [ ${#wheels[@]} -gt 1 ]; then
+    wheels=($(find /io/wheelhouse/ -name "$filename-$version-*linux_x86_64.whl"))
+fi
 if [ ${#wheels[@]} -eq 0 ]; then
     echo "no wheel matching '$filename-$version-\*.whl'" >&2
     exit 1
 elif [ ${#wheels[@]} -eq 1 ]; then
     wheel=${wheels[0]}
+else
+    echo "too many wheels matching '$filename-$version-\*linux_x86_64.whl'" >&2
+    exit 1
 fi
 
 if [[ ! -z "${postinstall_script}" ]]; then
